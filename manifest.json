@@ -1,0 +1,10 @@
+﻿{
+    "Name": "InterdimensionalShed",
+    "Author": "FinalDoom",
+    "Version": "0.0.1",
+    "Description": "Adds a new, more magical and expansive, shed upgrade to the Wizard's book construction menu.",
+    "UniqueID": "FinalDoom.InterdimensionalShed",
+    "EntryDll": "InterdimensionalShed.dll",
+    "MinimumApiVersion": "3.9",
+    "UpdateKeys": [ "Nexus:8181" ],
+}
