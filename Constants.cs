@@ -16,9 +16,41 @@ namespace InterdimensionalShed
         private const int ItemId_RadioactiveBar = 910;
         private const int ItemId_VoidEssence = 769;
 
-        private const string SaveKey = "InterdimensionalShed";
+        public const string SaveKey = "InterdimensionalShed";
+        public const string DimensionItemsKey = "InterdimensionalShedItems";
         private const string BlueprintId = "Interdimensional Shed";
         private const string ShedPurchaseMailId = "InterdimensionalShedPurchased";
+
+        public const string ShedDimensionModDataKey = "InterdimensionalShedLinkedDimensionName";
+        public static readonly Dictionary<int, string> ShedDimensionKeys = new Dictionary<int, string>
+        {
+            [769] = "InterdimensionalShedVoidDimension",
+            [305] = "InterdimensionalShedEggDimension",
+            [422] = "InterdimensionalShedMushroomDimension",
+            [768] = "InterdimensionalShedSunDimension",
+            [155] = "InterdimensionalShedStrangeVegetableDimension",
+            [373] = "InterdimensionalShedGourdDimension",
+            [279] = "InterdimensionalShedCandyDimension",
+            [279] = "InterdimensionalShedMarbleDimension",
+            [74] = "InterdimensionalShedRainbowDimension",
+            [466] = "InterdimensionalShedFuzzyDimension",
+            [80] = "InterdimensionalShedGlassDimension",
+            [216] = "InterdimensionalShedBreadDimension",
+            [418] = "InterdimensionalShedFlowerDimension",
+            [414] = "InterdimensionalShedWinterDimension",
+            [724] = "InterdimensionalShedStickyDimension",
+            [904] = "InterdimensionalShedBananaDimension",
+            // dimension with ponds and or fish
+            // Gem Dimensions
+            [60] = "InterdimensionalShedDimension1",
+            [62] = "InterdimensionalShedDimension2",
+            [64] = "InterdimensionalShedDimension3",
+            [66] = "InterdimensionalShedDimension4",
+            [68] = "InterdimensionalShedDimension5",
+            [70] = "InterdimensionalShedDimension6",
+            [72] = "InterdimensionalShedDimension7",
+            // Consider geodes, maybe the most valuable or something
+        };
 
         private static readonly Dictionary<string, string> FarmEventsData = new Dictionary<string, string>
         {

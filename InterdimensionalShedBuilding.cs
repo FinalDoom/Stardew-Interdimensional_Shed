@@ -1,6 +1,11 @@
 ﻿using Microsoft.Xna.Framework;
+using Netcode;
 using StardewValley;
 using StardewValley.Buildings;
+using StardewValley.Menus;
+using StardewValley.Objects;
+using StardewValley.TerrainFeatures;
+using StardewValley.Tools;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,42 +14,104 @@ using System.Threading.Tasks;
 
 namespace InterdimensionalShed
 {
-    class InterdimensionalShedBuilding : Building
+    public class InterdimensionalShedBuilding : Building
     {
         private static readonly Point ItemSlotTileOffset = new Point(1, 0);
-        //public 
-
-        public void PrepareModDataDictionaryObjects()
+        private static Dictionary<int, int> DimensionItemCounts = new Dictionary<int, int>();
+        static InterdimensionalShedBuilding()
         {
-            modData.Add("x", "y");
+            var farmModData = Game1.getFarm().modData;
+            if (farmModData.ContainsKey(ModEntry.DimensionItemsKey))
+            {
+                foreach (var kvp in farmModData[ModEntry.DimensionItemsKey].Split(','))
+                {
+                    var split = kvp.Split('=');
+                    DimensionItemCounts[int.Parse(split[0])] = int.Parse(split[1]);
+                }
+            }
+            else
+            {
+                DimensionItemCounts[769] = 100;
+            }
         }
 
-        public override List<Item> GetAdditionalItemsToCheckBeforeDemolish()
-        {
-            // TODO probably also useful with below method
-            return base.GetAdditionalItemsToCheckBeforeDemolish();
+        private bool _itemSlotMenuOpen = false;
+        public bool ItemSlotMenuOpen {
+            get
+            {
+                return _itemSlotMenuOpen = Game1.activeClickableMenu != null;
+            }
+            set
+            {
+                _itemSlotMenuOpen = value;
+            }
         }
-        public override void BeforeDemolish()
+        private int? _selectedDimensionItem = null;
+        public int? SelectedDimensionItemId
         {
-            // TODO add logic for boxing up items in the multiple dimension rooms
-            base.BeforeDemolish();
+            get
+            {
+                return _selectedDimensionItem;
+            }
+            set
+            {
+                _selectedDimensionItem = value;
+            }
         }
 
-        // todo fix data loaded for CanBePainted()
-        public override void dayUpdate(int dayOfMonth)
+        public InterdimensionalShedBuilding(Building building) : base(new BluePrint(building.buildingType.Value), new Vector2(building.tileX.Value, building.tileY.Value))
         {
-            // TODO add indoors.DayUpdate(dayOfMonth) for all dimension rooms
-            base.dayUpdate(dayOfMonth);
+            indoors.Value = building.indoors.Value;
+            daysOfConstructionLeft.Value = 0;
+            modData = building.modData;
+            modData[ModEntry.SaveKey] = "true";
+            if (modData.ContainsKey("SelectedDimensionItem"))
+            {
+                var item = modData["SelectedDimensionItem"];
+                _selectedDimensionItem = item.Equals("none") ? (int?)null : int.Parse(item);
+            }
+        }
+
+        protected override GameLocation getIndoors(string nameOfIndoorsWithoutUnique)
+        {
+            return null; // Don't build an interior, this is so the constructor can set it from the parent building.
         }
 
         public override bool doAction(Vector2 tileLocation, Farmer who)
         {
             if (who.IsLocalPlayer && tileLocation.X == (float)(ItemSlotTileOffset.X + humanDoor.X + tileX.Value) && tileLocation.Y == (float)(ItemSlotTileOffset.Y + humanDoor.Y + tileY.Value))
             {
+                //if (!ItemSlotMenuOpen)
+                //    Game1.activeClickableMenu = new ItemSlotMenu(null); 
+                //new ItemSlotMenu(logMenuAction);
                 // Open up the item slot gui
                 // Consider a flag if the gui is currently open to prevent other players opening/duping/whatever
+                if (_selectedDimensionItem is int)
+                {
+                    _selectedDimensionItem = null;
+                }
+                else
+                {
+                    _selectedDimensionItem = 769;
+                }
             }
+            else if (_selectedDimensionItem is int dimensionItemId && who.IsLocalPlayer && tileLocation.X == (float)(humanDoor.X + tileX.Value) && tileLocation.Y == (float)(humanDoor.Y + tileY.Value))
+            {
+                var dimension = ModEntry.ShedDimensionKeys[dimensionItemId];
+                var lcl_indoors = Game1.getFarm().buildings.Where(b => b.modData.ContainsKey(ModEntry.ShedDimensionModDataKey)).First(b => b.modData[ModEntry.ShedDimensionModDataKey].Equals(dimension)).indoors.Value;
+                var warp = lcl_indoors.warps[0];
+                warp.TargetX = tileX.Value + humanDoor.X;
+                warp.TargetY = tileY.Value + humanDoor.Y + 1;
+                // Consider Myst sound here
+                who.currentLocation.playSoundAt("doorClose", tileLocation);
+                Game1.warpFarmer(lcl_indoors.uniqueName.Value, warp.X, warp.Y - 1, Game1.player.FacingDirection, isStructure: true);
+                return true;
+            }
+            // Warp to normal interior handled by base class
             return base.doAction(tileLocation, who);
+        }
+        public void logMenuAction(string s, int i)
+        {
         }
 
         // doesTileHaveProperty has something for warps, looks like for the door, but odd
@@ -69,17 +136,19 @@ namespace InterdimensionalShed
             return base.leftClicked();
         }
 
-        public override void load()
-        {
-            // TODO check/consider SaveGame.load wrt this, and this could be useful for swapping out interiors
-            base.load();
-        }
-
         public override void performToolAction(Tool t, int tileX, int tileY)
         {
             // Can probably do like, use pickaxe to get item out -- but check if anyone's inside and pop up a message if there is.. or not? might not be necessary if the door warp still leads to the farm
-            base.performToolAction(t, tileX, tileY);
         }
 
+
+        internal static void StoreStaticData()
+        {
+            var kvps = DimensionItemCounts.Select(x => String.Format("{0}={1}", x.Key, x.Value));
+            Game1.getFarm().modData[ModEntry.DimensionItemsKey] = String.Join(",", kvps);
+        }
+        internal void StoreObjectData()
+        {
+        }
     }
 }

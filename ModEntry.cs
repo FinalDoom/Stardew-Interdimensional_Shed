@@ -22,28 +22,17 @@ namespace InterdimensionalShed
 {
     internal partial class ModEntry : Mod, IAssetLoader, IAssetEditor
     {
-        private int shedCount;
         private ModConfig _config;
         private CarpenterMenu _currentMenu;
-        private ModData _data;
 
         public override void Entry(IModHelper helper)
         {
-            shedCount = 0;
             _config = Helper.ReadConfig<ModConfig>();
             Helper.Events.Display.MenuChanged += OnMenuChanged;
             Helper.Events.GameLoop.SaveLoaded += OnSaveLoaded_InitializeBuildings;
-            Helper.Events.GameLoop.Saved += Saved_SaveModData;
+            Helper.Events.GameLoop.Saving += GameLoop_Saving_UnconvertBuildings;
+            Helper.Events.GameLoop.Saved += GameLoop_Saved_ReconvertBuildings;
             //Helper.Events.Player.Warped += Player_Warped;
-            Helper.Events.GameLoop.Saving += Saving_PrepareModDataDictionaryObjects;
-        }
-
-        private void Saving_PrepareModDataDictionaryObjects(object sender, SavingEventArgs e)
-        {
-            foreach (var idsb in Game1.getFarm().buildings.Where(b => b is InterdimensionalShedBuilding).Cast<InterdimensionalShedBuilding>())
-            {
-                idsb.PrepareModDataDictionaryObjects();
-            }
         }
 
         private void Player_Warped(object sender, WarpedEventArgs e)
@@ -52,7 +41,7 @@ namespace InterdimensionalShed
             {
                 foreach (Building b in farm.buildings.Where(b => b.indoors.Value != null && b.indoors.Value.NameOrUniqueName.ToLower().Contains("shed")))
                 {
-                    Monitor.Log($"shed {b.nameOfIndoors} or {b.nameOfIndoorsWithoutUnique}", LogLevel.Debug);
+                    Monitor.Log($"shed {b.GetType().FullName} in {b.nameOfIndoors} or {b.nameOfIndoorsWithoutUnique} warps {String.Join(" / ", b.indoors.Value.warps.Select(w => w.TargetName + " x:" + w.TargetX + " y:" + w.TargetY))}", LogLevel.Debug);
                 }
             }
         }
@@ -64,94 +53,103 @@ namespace InterdimensionalShed
                 Monitor.Log("Adding blueprint to Wizard Book CarpenterMenu", LogLevel.Debug);
                 Helper.Reflection.GetField<List<BluePrint>>(menu, "blueprints").GetValue().Add(new BluePrint(BlueprintId));
                 _currentMenu = menu;
-                Helper.Events.GameLoop.UpdateTicked += InterceptBuildingUpgrade;
+                Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked_InterceptBuildingUpgrade;
             }
 
         }
 
-        public void InterceptBuildingUpgrade(object sender, UpdateTickedEventArgs e)
+        public void GameLoop_UpdateTicked_InterceptBuildingUpgrade(object sender, UpdateTickedEventArgs e)
         {
             if (Helper.Reflection.GetField<bool>(_currentMenu, "upgrading").GetValue() && Helper.Reflection.GetField<bool>(_currentMenu, "freeze").GetValue())
             {
-                var toUpgrade = Game1.getFarm().getBuildingAt(new Vector2((Game1.viewport.X + Game1.getOldMouseX(ui_scale: false)) / 64, (Game1.viewport.Y + Game1.getOldMouseY(ui_scale: false)) / 64));
+                var farm = Game1.getFarm();
+                var toUpgrade = farm.getBuildingAt(new Vector2((Game1.viewport.X + Game1.getOldMouseX(ui_scale: false)) / 64, (Game1.viewport.Y + Game1.getOldMouseY(ui_scale: false)) / 64));
                 if (toUpgrade != null && _currentMenu.CurrentBlueprint.name != null && toUpgrade.buildingType.Equals(_currentMenu.CurrentBlueprint.nameOfBuildingToUpgrade))
                 {
-                    var indoors = toUpgrade.indoors;
+                    Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked_InterceptBuildingUpgrade;
+                    // Keep the correct indoor in the shed, but override the warp to go to one of the other sheds we create
 
-                    // Do the upgrade immediately
-                    toUpgrade.daysUntilUpgrade.Value = 0;
-                    BluePrint CurrentBlueprint = new BluePrint("Interdimensional Shed");
-                    indoors.Value.mapPath.Value = "Maps\\" + CurrentBlueprint.mapToWarpTo;
-#pragma warning disable AvoidNetField // Avoid Netcode types when possible
-                    indoors.Value.name.Value = CurrentBlueprint.mapToWarpTo;
-#pragma warning restore AvoidNetField // Avoid Netcode types when possible
-                    toUpgrade.buildingType.Value = CurrentBlueprint.name;
+                    // Do the upgrade immediately then swap for our type
+                    toUpgrade.buildingType.Value = BlueprintId;
                     toUpgrade.resetTexture();
-                    shedCount++;
-                    toUpgrade.modData.Add(SaveKey, "true");
-                    //toUpgrade.modData.Add("InterdimensionalIndoorsDictionary", toUpgrade.indoors.Serializer)
-                    // Do something like this to get the indoors values as xml or something....
-                    /*
-                    MemoryStream mstream1 = new MemoryStream(1024);
-                    MemoryStream mstream2 = new MemoryStream(1024);
-                    if (CancelToTitle)
+                    var idsb = new InterdimensionalShedBuilding(toUpgrade);
+                    farm.buildings.Remove(toUpgrade);
+                    farm.buildings.Add(idsb);
+
+                    if (!FarmLinkedToMultipleDimensions)
                     {
-                        throw new TaskCanceledException();
+                        InitializeDimensionBuildings();
                     }
-                    yield return 2;
-                    XmlWriterSettings settings = new XmlWriterSettings();
-                    settings.CloseOutput = false;
-                    Console.WriteLine("Saving without compression...");
-                    _ = mstream2;
-                    XmlWriter writer = XmlWriter.Create(mstream1, settings);
-                    writer.WriteStartDocument();
-                    serializer.Serialize(writer, saveData);
-                    writer.WriteEndDocument();
-                    writer.Flush();
-                    writer.Close();
-                    mstream1.Close();
-                    byte[] buffer1 = mstream1.ToArray();
-                    */
-
-                    if (shedCount <= 1)
-                    {
-                        // First shed purchased
-                        Game1.addMail(ShedPurchaseMailId, true, true);
-                    }
-
-                    //var isb = _mapper.Map<InterdimensionalShedBuilding>(toUpgrade);
-                    //_data.CustomBuildings.Add(new Point(toUpgrade.tileX.Value, toUpgrade.tileY.Value), isb);
-
-                    //farm.buildings.Remove(toUpgrade);
-                    //farm.buildings.Add(isb);
-                    
-                    Helper.Events.GameLoop.UpdateTicked -= InterceptBuildingUpgrade;
                 }
+            }
+        }
+
+        private void InitializeDimensionBuildings()
+        {
+            Monitor.Log("Initializing configured dimension buildings", LogLevel.Debug);
+            var farmhouseWarp = Game1.getFarm().GetMainFarmHouseEntry();
+            var buildings = Game1.getFarm().buildings;
+            foreach (var dimension in ShedDimensionKeys.Values)
+            {
+                var b = new Building(new BluePrint("Big Shed"), new Vector2(-100, -100));
+                b.modData[ShedDimensionModDataKey] = dimension;
+                b.daysOfConstructionLeft.Value = 0;
+                foreach (var warp in b.indoors.Value.warps)
+                {
+                    // Give the warp back sensible defaults, since these are off the map
+                    warp.TargetX = farmhouseWarp.X;
+                    warp.TargetY = farmhouseWarp.Y;
+                }
+                buildings.Add(b);
+            }
+            Monitor.Log($"Dimension buildings initialized {FarmLinkedToMultipleDimensions}", LogLevel.Debug);
+        }
+
+        private void ConvertBuildingsToCustomType()
+        {
+            var farm = Game1.getFarm();
+            foreach (var building in farm.buildings.Where(b => b.modData.ContainsKey(SaveKey)).ToList())
+            {
+                farm.buildings.Remove(building);
+                farm.buildings.Add(new InterdimensionalShedBuilding(building));
+            }
+        }
+
+        private void UnconvertBuildingsFromCustomType()
+        {
+            InterdimensionalShedBuilding.StoreStaticData();
+            var farm = Game1.getFarm();
+            foreach (var building in farm.buildings.OfType<InterdimensionalShedBuilding>().ToList())
+            {
+                building.StoreObjectData();
+                var baseBuilding = new Building(new BluePrint(building.buildingType.Value), new Vector2(building.tileX.Value, building.tileY.Value));
+                baseBuilding.modData = building.modData;
+                baseBuilding.daysOfConstructionLeft.Value = 0;
+                farm.buildings.Remove(building);
+                farm.buildings.Add(baseBuilding);
             }
         }
 
         public void OnSaveLoaded_InitializeBuildings(object sender, SaveLoadedEventArgs e)
         {
             Monitor.Log("loaded", LogLevel.Debug);
-            _data = Helper.Data.ReadSaveData<ModData>(SaveKey);
-            if (_data == null)
+            if (FarmLinkedToMultipleDimensions)
             {
-                _data = new ModData();
+                Game1.addMail(ShedPurchaseMailId, true, true);
             }
-            var farm = (Farm)Game1.getLocationFromName("Farm");
-            foreach (var pair in _data.CustomBuildings)
-            {
-                var point = pair.Key;
-                var idsb = pair.Value;
-                var baseBuilding = farm.getBuildingAt(new Vector2(point.X, point.Y));
-                farm.buildings.Remove(baseBuilding);
-                farm.buildings.Add(idsb);
-            }
+            ConvertBuildingsToCustomType();
         }
 
-        public void Saved_SaveModData(object sender, SavedEventArgs e)
+        public void GameLoop_Saving_UnconvertBuildings(object sender, SavingEventArgs e)
         {
-            Helper.Data.WriteSaveData(SaveKey, _data);
+            Monitor.Log("Unconverting", LogLevel.Debug);
+            UnconvertBuildingsFromCustomType();
+        }
+
+        public void GameLoop_Saved_ReconvertBuildings(object sender, SavedEventArgs e)
+        {
+            Monitor.Log("Reconverting", LogLevel.Debug);
+            ConvertBuildingsToCustomType();
         }
 
         public bool CanLoad<T>(IAssetInfo asset)
@@ -279,7 +277,7 @@ namespace InterdimensionalShed
             }
             if (_config.OverrideSecondItem)
             {
-                if (_config.SecondItemId is int SecondItemId && _config.SecondItemCount is int SecondItemCount)
+                if (_config.SecondItemId is int SecondItemId && _config.SecondItemCount is int SecondItemCount && SecondItemCount > 0)
                 {
                     _itemCost.Add(SecondItemId);
                     _itemCost.Add(SecondItemCount);
@@ -292,7 +290,7 @@ namespace InterdimensionalShed
             }
             if (_config.OverrideThirdItem)
             {
-                if (_config.ThirdItemId is int ThirdItemId && _config.ThirdItemCount is int ThirdItemCount)
+                if (_config.ThirdItemId is int ThirdItemId && _config.ThirdItemCount is int ThirdItemCount && ThirdItemCount > 0)
                 {
                     _itemCost.Add(ThirdItemId);
                     _itemCost.Add(ThirdItemCount);
@@ -304,6 +302,14 @@ namespace InterdimensionalShed
                 _itemCost.Add(100);
             }
             return string.Join(" ", _itemCost);
+        }
+
+        public bool FarmLinkedToMultipleDimensions
+        {
+            get
+            {
+                return Game1.getFarm().buildings.Any(b => b.modData.ContainsKey(ShedDimensionModDataKey) && b.modData[ShedDimensionModDataKey].Equals(ShedDimensionKeys[769]));
+            }
         }
     }
 }
