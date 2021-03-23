@@ -1,0 +1,363 @@
+﻿[
+  {
+    "itemId": 769,
+    "stageCounts": {
+      "1": 40,
+      "2": 120,
+      "3": 300,
+      "4": 600,
+      "5": 900
+    },
+    "buildingId": "VoidDimension",
+    "mapNameBase": "Interdimensional Shed",
+    "displayName": "Void Dimension",
+    "hint": "If you're seeing this, you've done something terrible.",
+    "description": "It's like something from beyond is trying to get in. Beware of the cracks."
+  },
+  {
+    "itemId": 305,
+    "stageCounts": {
+      "1": 12,
+      "2": 47,
+      "3": 116,
+      "4": 231,
+      "5": 339,
+      "6": 770
+    },
+    "buildingId": "EggDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Egg Dimension",
+    "hint": "Are chickens really from another dimension?",
+    "description": "It smells like a warm breakfast, and I'm seeing spots."
+  },
+  {
+    "itemId": 422,
+    "stageCounts": {
+      "1": 3,
+      "2": 12,
+      "3": 30,
+      "4": 60,
+      "5": 88,
+      "6": 200
+    },
+    "buildingId": "MushroomDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Mushroom Dimension",
+    "hint": "What's so magical about it if it just grows in a cave?",
+    "description": "This plays looks like I can really let out my inner \"Fun gi"
+  },
+  {
+    "itemId": 768,
+    "stageCounts": {
+      "1": 50,
+      "2": 150,
+      "3": 375,
+      "4": 750
+    },
+    "buildingId": "SunDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Sunny Dimension",
+    "hint": "Suncreen is recommended.",
+    "description": "It's bright and warm here all the time."
+  },
+  {
+    "itemId": 155,
+    "stageCounts": {
+      "1": 3,
+      "2": 12,
+      "3": 30,
+      "4": 60,
+      "5": 88,
+      "6": 200
+    },
+    "buildingId": "StrangeVegetableDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Strange Vegetable Dimension",
+    "hint": "What is it? A vegetable? Something magical?",
+    "description": "Why does this place even exist (or some other line showing PC confusion"
+  },
+  {
+    "itemId": 373,
+    "stageCounts": {
+      "1": 1,
+      "2": 3,
+      "3": 6,
+      "4": 12,
+      "5": 18,
+      "6": 40
+    },
+    "buildingId": "GourdDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Gourd Dimension",
+    "hint": "Fall has exemplary colors.",
+    "description": "A slight fall breeze is blowing. It feels magical."
+  },
+  {
+    "itemId": 279,
+    "stageCounts": {
+      "1": 1,
+      "2": 2,
+      "3": 3,
+      "4": 5,
+      "5": 7,
+      "6": 16
+    },
+    "buildingId": "CandyDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Candy Dimension",
+    "hint": "Dude. Sweet!",
+    "description": "I hope my dentist doesn't learn about this"
+  },
+  {
+    "itemId": 567,
+    "stageCounts": {
+      "1": 7,
+      "2": 28,
+      "3": 69,
+      "4": 137,
+      "5": 200,
+      "6": 455
+    },
+    "buildingId": "MarbleDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Marble Dimension",
+    "hint": "Maybe I should make a statue garden...",
+    "description": "It's so smooth and bright; but kinda cold."
+  },
+  {
+    "itemId": 74,
+    "stageCounts": {
+      "1": 1,
+      "2": 3,
+      "3": 8,
+      "4": 15,
+      "5": 23,
+      "6": 50
+    },
+    "buildingId": "RainbowDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Rainbow Dimension",
+    "hint": "In a galaxy far far away...",
+    "description": "Maybe there are unicorns here. At least there are rainbows."
+  },
+  {
+    "itemId": 446,
+    "stageCounts": {
+      "1": 2,
+      "2": 6,
+      "3": 14,
+      "4": 27,
+      "5": 39,
+      "6": 89
+    },
+    "buildingId": "FuzzyDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Fuzzy Dimension",
+    "hint": "What makes them lucky? Budding?",
+    "description": "*'s so fluffy I'm gonna die!"
+  },
+  {
+    "itemId": 80,
+    "stageCounts": {
+      "1": 80,
+      "2": 240,
+      "3": 600
+    },
+    "buildingId": "GlassDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Glass Dimension",
+    "hint": "You might encounter some pane if you don't keep an eye out, especially in a chase.",
+    "description": "It's full of crystalline formations."
+  },
+  {
+    "itemId": 216,
+    "stageCounts": {
+      "1": 34,
+      "2": 100,
+      "3": 250,
+      "4": 500,
+      "5": 750
+    },
+    "buildingId": "BreadDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Bread Dimension",
+    "hint": "It smells so good and is even better to eat.",
+    "description": "It's like being down the street from a bakery."
+  },
+  {
+    "itemId": 418,
+    "stageCounts": {
+      "1": 17,
+      "2": 50,
+      "3": 125,
+      "4": 250,
+      "5": 367,
+      "6": 834
+    },
+    "buildingId": "FlowerDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Flower Dimension",
+    "hint": "I've always wanted to see a massive field of tulips.",
+    "description": "The colors are astounding. Watch your step."
+  },
+  {
+    "itemId": 414,
+    "stageCounts": {
+      "1": 5,
+      "2": 20,
+      "3": 50,
+      "4": 100,
+      "5": 147,
+      "6": 334
+    },
+    "buildingId": "WinterDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Winter Dimension",
+    "hint": "It's frozen but somehow grows anyway.",
+    "description": "I wonder if this is Niflheim. So cold."
+  },
+  {
+    "itemId": 724,
+    "stageCounts": {
+      "1": 5,
+      "2": 15,
+      "3": 38,
+      "4": 75,
+      "5": 110,
+      "6": 250
+    },
+    "buildingId": "StickyDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Sticky Dimension",
+    "hint": "Sticky, sweet, drippy, yum.",
+    "description": "My shoes stick to the floor. Gross."
+  },
+  {
+    "itemId": 904,
+    "stageCounts": {
+      "1": 3,
+      "2": 12,
+      "3": 29,
+      "4": 58,
+      "5": 85,
+      "6": 193
+    },
+    "buildingId": "BananaDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Banana Dimension",
+    "hint": "Mine bends to the left.",
+    "description": "It seems like someone is leaving one of the villager's favorite things."
+  },
+  {
+    "itemId": 60,
+    "stageCounts": {
+      "1": 3,
+      "2": 12,
+      "3": 30,
+      "4": 60,
+      "5": 88,
+      "6": 200
+    },
+    "buildingId": "Shed1Dimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Shed 1",
+    "hint": "(green text) Seems like a pretty normal crystal.",
+    "description": "TODO"
+  },
+  {
+    "itemId": 62,
+    "stageCounts": {
+      "1": 6,
+      "2": 17,
+      "3": 42,
+      "4": 84,
+      "5": 123,
+      "6": 278
+    },
+    "buildingId": "Shed2Dimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Shed 2",
+    "hint": "(blue text) Seems like a pretty normal crystal.",
+    "description": "TODO"
+  },
+  {
+    "itemId": 64,
+    "stageCounts": {
+      "1": 3,
+      "2": 12,
+      "3": 30,
+      "4": 60,
+      "5": 88,
+      "6": 200
+    },
+    "buildingId": "Shed3Dimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Shed 3",
+    "hint": "(red text) Seems like a pretty normal crystal.",
+    "description": "TODO"
+  },
+  {
+    "itemId": 66,
+    "stageCounts": {
+      "1": 10,
+      "2": 30,
+      "3": 75,
+      "4": 150,
+      "5": 220,
+      "6": 500
+    },
+    "buildingId": "Shed4Dimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Shed 4",
+    "hint": "(purple text) Seems like a pretty normal crystal.",
+    "description": "TODO"
+  },
+  {
+    "itemId": 68,
+    "stageCounts": {
+      "1": 13,
+      "2": 38,
+      "3": 94,
+      "4": 188,
+      "5": 275,
+      "6": 625
+    },
+    "buildingId": "Shed5Dimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Shed 5",
+    "hint": "(orange text) Seems like a pretty normal crystal.",
+    "description": "TODO"
+  },
+  {
+    "itemId": 70,
+    "stageCounts": {
+      "1": 4,
+      "2": 15,
+      "3": 38,
+      "4": 75,
+      "5": 110,
+      "6": 250
+    },
+    "buildingId": "Shed6Dimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Shed 6",
+    "hint": "(jade text) Seems like a pretty normal crystal.",
+    "description": "TODO"
+  },
+  {
+    "itemId": 72,
+    "stageCounts": {
+      "1": 1,
+      "2": 7,
+      "3": 17,
+      "4": 34,
+      "5": 47,
+      "6": 107
+    },
+    "buildingId": "Shed7Dimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Shed 7",
+    "hint": "(light blue text) Seems like a pretty normal crystal.",
+    "description": "TODO"
+  }
+]

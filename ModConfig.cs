@@ -3,7 +3,7 @@ using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using System.Collections.Generic;
 
-namespace InterdimensionalShed
+namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     class ModConfig
     {
@@ -17,13 +17,6 @@ namespace InterdimensionalShed
         public int? ThirdItemId { get; set; } = null;
         public int? ThirdItemCount { get; set; } = null;
         public int GoldCost { get; set; } = 75000;
-
-
-
-        public KeybindList ToggleShaftsKey { get; set; } = KeybindList.Parse("OemTilde");
-        public bool ForceShafts { get; set; } = false;
-        public Color HighlightRectangleRGBA { get; set; } = Color.Lime;
-        public string HighlightImageFilename { get; set; } = "cracked.png";
 
     }
 }

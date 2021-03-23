@@ -4,53 +4,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace InterdimensionalShed
+namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     partial class ModEntry
     {
         private const string ModId = "8181";
 
-        private const int ItemId_QiGem = 858;
+        //private const int ItemId_QiGem = 858;
         private const int ItemId_IridiumBar = 337;
-        private const int ItemId_QiFruit = 889;
+        //private const int ItemId_QiFruit = 889;
         private const int ItemId_RadioactiveBar = 910;
         private const int ItemId_VoidEssence = 769;
 
-        public const string SaveKey = "InterdimensionalShed";
-        public const string DimensionItemsKey = "InterdimensionalShedItems";
-        private const string BlueprintId = "Interdimensional Shed";
-        private const string ShedPurchaseMailId = "InterdimensionalShedPurchased";
+        internal const string SaveKey = "InterdimensionalShed";
+        internal const string BlueprintId = "Interdimensional Shed";
+        internal const string ShedPurchaseMailId = "InterdimensionalShedPurchased";
 
-        public const string ShedDimensionModDataKey = "InterdimensionalShedLinkedDimensionName";
-        public static readonly Dictionary<int, string> ShedDimensionKeys = new Dictionary<int, string>
-        {
-            [769] = "InterdimensionalShedVoidDimension",
-            [305] = "InterdimensionalShedEggDimension",
-            [422] = "InterdimensionalShedMushroomDimension",
-            [768] = "InterdimensionalShedSunDimension",
-            [155] = "InterdimensionalShedStrangeVegetableDimension",
-            [373] = "InterdimensionalShedGourdDimension",
-            [279] = "InterdimensionalShedCandyDimension",
-            [279] = "InterdimensionalShedMarbleDimension",
-            [74] = "InterdimensionalShedRainbowDimension",
-            [466] = "InterdimensionalShedFuzzyDimension",
-            [80] = "InterdimensionalShedGlassDimension",
-            [216] = "InterdimensionalShedBreadDimension",
-            [418] = "InterdimensionalShedFlowerDimension",
-            [414] = "InterdimensionalShedWinterDimension",
-            [724] = "InterdimensionalShedStickyDimension",
-            [904] = "InterdimensionalShedBananaDimension",
-            // dimension with ponds and or fish
-            // Gem Dimensions
-            [60] = "InterdimensionalShedDimension1",
-            [62] = "InterdimensionalShedDimension2",
-            [64] = "InterdimensionalShedDimension3",
-            [66] = "InterdimensionalShedDimension4",
-            [68] = "InterdimensionalShedDimension5",
-            [70] = "InterdimensionalShedDimension6",
-            [72] = "InterdimensionalShedDimension7",
-            // Consider geodes, maybe the most valuable or something
-        };
 
         private static readonly Dictionary<string, string> FarmEventsData = new Dictionary<string, string>
         {
@@ -96,7 +65,7 @@ namespace InterdimensionalShed
         private static readonly Dictionary<string, string> InterdimensionalShedEventsData = new Dictionary<string, string>
         {
             // Initial entry to shed
-            [ModId + "0000/Hn " + ShedPurchaseMailId] =
+            [ModId + "0000/Hn bogusId/Hn " + ShedPurchaseMailId] = // todo remove bogusId
                 "continue/9 9/farmer 9 16 0/skippable/pause 800/emote farmer 16/jump farmer/pause 600/emote farmer 8/pause 800" +
                 "/move farmer 0 -5 0/pause 250/faceDirection farmer 3/faceDirection farmer 2/faceDirection farmer 1/playSound dwop/emote farmer 8/pause 500" +
                 "/move farmer 0 -1 3/move farmer -6 0 3/pause 250/faceDirection farmer 2/pause 200/emote farmer 40/pause 500" +
