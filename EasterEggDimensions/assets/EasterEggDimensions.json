@@ -1,0 +1,20 @@
+﻿[
+  {
+    "itemId": 306,
+    "stageCounts": {
+      "1": 69
+    },
+    "buildingId": "MayoDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Cum Zone",
+    "hint": "Don't ruin the surprise.",
+    "description1": "Welcome to the cum zone.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Cornsilk",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.EasterEggDimensions.EasterEggDimensionImplementation",
+    "ignoreQuality": "FALSE",
+    "quality": 4
+  }
+]

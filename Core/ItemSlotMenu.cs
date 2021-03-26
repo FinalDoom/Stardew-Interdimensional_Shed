@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Netcode;
 using StardewValley;
 using SDVUtility = StardewValley.Utility;
+using SDVObject = StardewValley.Object;
 using StardewValley.Menus;
 using StardewValley.Network;
 using System;
@@ -11,87 +12,68 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StardewValley.BellsAndWhistles;
+using FinalDoom.StardewValley.InterdimensionalShed.API;
+using StardewValley.Tools;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
-    internal class ItemSlotMenu : MenuWithInventory// ItemGrabMenu
+    internal class ItemSlotMenu : MenuWithInventory
     {
         /*********
         ** Fields
         *********/
-        private static readonly Texture2D greyscaleObjectSpriteSheet = getGreyscaleObjectSpriteSheet();
 
-        /// <summary>The labels to draw.</summary>
-        private readonly List<ClickableComponent> Labels = new List<ClickableComponent>();
+        private const string nodimensionplaceholder = "default";
 
-        /// <summary>The season buttons to draw.</summary>
-        private readonly List<ClickableTextureComponent> ItemDimensionButtons = new List<ClickableTextureComponent>();
-
-        /// <summary>The day buttons to draw.</summary>
-        private readonly List<ClickableTextureComponent> DayButtons = new List<ClickableTextureComponent>();
+        /// <summary>Greyscaled object sprite sheet for use in showing inactive but unlocked</summary>
+        private static readonly Texture2D greyscaleObjectSpriteSheet = Utility.getGreyscaledSpriteSheet(Game1.objectSpriteSheet);
 
         /// <summary>The unlocked item dimension buttons</summary>
         private readonly List<ClickableTextureComponent> DimensionButtons = new List<ClickableTextureComponent>();
+        /// <summary>The item dimension buttons for dimensions currently showing hints</summary>
         private readonly List<ClickableTextureComponent> HintButtons = new List<ClickableTextureComponent>();
 
         // Make sure that only one person can alter dimension contents at a time
         public static readonly NetMutex mutex = new NetMutex();
+
         // TODO also add a check so that you can't alter a dimension that someone is inside rn
         // Maybe a little person icon if someone's inside?
         // You can add items but not remove? yeah -- more of this state should probably be in the building code
-        private Item DisplayedItem;
+
+        /// <summary>The dimension info associated with the currently selected dimension or null for default shed</summary>
+        private DimensionInfo info;
         /// <summary>The callback to invoke when the birthday value changes.</summary>
-        private readonly Action<Item> ChangeDimensionSelection;
+        private readonly Action<DimensionInfo> ChangeDimensionSelection;
+
+        // Scrolling components and data
         private bool scrolling;
         private ClickableTextureComponent upArrow;
         private ClickableTextureComponent downArrow;
         private ClickableTextureComponent scrollBar;
         private Rectangle scrollBarRunner;
         private int currentRow;
-        private int rowsDisplayable = 6;
-        private int itemsPerRow = 3;
         private int rows;
-        private DimensionInfo info;
-
-        private static Texture2D getGreyscaleObjectSpriteSheet()
-        {
-            var colored = Game1.objectSpriteSheet;
-            var greyscale = new Texture2D(colored.GraphicsDevice, colored.Width, colored.Height);
-            var data = new Color[colored.Width * colored.Height];
-            colored.GetData(data);
-            for (var i = 0; i < data.Length; ++i)
-            {
-                var vals = data[i].ToVector4();
-                var q = (vals.X + vals.Y + vals.Z) / 3;
-                q /= vals.W; // optional - undo alpha premultiplication
-                data[i] = Color.FromNonPremultiplied(new Vector4(q, q, q, vals.W == 0.0f ? vals.W : 0.5f));
-            }
-            greyscale.SetData(data);
-            return greyscale;
-        }
-
+        // Scrolling constants
+        private const int rowsDisplayable = 6;
+        private const int itemsPerRow = 3;
+        private const int itemsDisplayable = itemsPerRow * rowsDisplayable;
 
         /*********
         ** Public methods
         *********/
+
         /// <summary>Construct an instance.</summary>
-        public ItemSlotMenu(Item item, Action<Item> changeDimensionSelection)
+        public ItemSlotMenu(DimensionInfo info, Action<DimensionInfo> changeDimensionSelection)
             //: base(inventory: new List<Item>() { item }, reverseGrab: false, showReceivingMenu: false, highlightFunction: InventoryMenu.highlightAllItems, 
             //      behaviorOnItemSelectFunction: (item, farmer) => { }, message: null, behaviorOnItemGrab: (item, farmer) => { },
             //      snapToBottom: false, canBeExitedWithKey: true, playRightClickSound: true, allowRightClick: true, showOrganizeButton: true) // ItemGrabMenu base
-            : base(highlightThisItem, okButton: false, trashCan: false, inventoryXOffset: 16, inventoryYOffset: 132, menuOffsetHack: 0) // MenuWithInventory base
+            : base(InventoryMenu.highlightAllItems, okButton: false, trashCan: false, inventoryXOffset: 16, inventoryYOffset: 132, menuOffsetHack: 0) // MenuWithInventory base
         {
-            DisplayedItem = item;
-            info = DisplayedItem == null ? null : ModEntry.DimensionData.getDimensionInfo(DisplayedItem);
+            this.info = info;
             ChangeDimensionSelection = changeDimensionSelection;
             height += 128;
             yPositionOnScreen -= 128;
             SetUpPositions();
-        }
-
-        public static bool highlightThisItem(Item i)
-        {
-            return true;
         }
 
         /// <summary>The method called when the game window changes size.</summary>
@@ -105,8 +87,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             SetUpPositions();
         }
 
-        private const string nodimensionplaceholder = "default";
-        /// <summary>Regenerate the UI.</summary>
+        /// <summary>Regenerate the UI elements.</summary>
         private void SetUpPositions()
         {
             DimensionButtons.Clear();
@@ -116,8 +97,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             var xPosition = xPositionOnScreen + borderWidth + 8 + 4;
             var yPosition = yPositionOnScreen + borderWidth + 64 + 8;
             var index = 0;
-            var itemsDisplayable = itemsPerRow * rowsDisplayable;
-            var visibleDimensions = ModEntry.DimensionData.UnlockedDimensions;
+            var visibleDimensions = ModEntry.DimensionData.DiscoveredDimensions;
             var hintedDimensions = ModEntry.DimensionData.HintedDimensions;
             // Plus 1 for the default dimension
             rows = (int)Math.Ceiling((float)(visibleDimensions.Count() + hintedDimensions.Count() + 1) / itemsPerRow);
@@ -131,7 +111,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             {
                 toSkip--;
             }
-            foreach (var item in visibleDimensions)
+            foreach (var info in visibleDimensions)
             {
                 if (toSkip > 0)
                 {
@@ -142,15 +122,16 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 {
                     break;
                 }
+                var item = info.DimensionImplementation.Item;
                 var xOffset = (index % itemsPerRow) * Game1.tileSize;
                 var yOffset = ((index % itemsDisplayable) / itemsPerRow) * (Game1.tileSize + 6);
                 var spritesheet = item.Stack > 0 ? Game1.objectSpriteSheet : greyscaleObjectSpriteSheet;
-                DimensionButtons.Add(new ClickableTextureComponent(Convert.ToString(item.ParentSheetIndex), new Rectangle(xPosition + xOffset, yPosition + yOffset, Game1.tileSize * 1, Game1.tileSize), "", "", spritesheet, Game1.getSourceRectForStandardTileSheet(spritesheet, item.ParentSheetIndex, 16, 16), Game1.pixelZoom));
+                DimensionButtons.Add(new ClickableTextureComponent(Convert.ToString(item.ParentSheetIndex), new Rectangle(xPosition + xOffset, yPosition + yOffset, Game1.tileSize, Game1.tileSize), "", "", spritesheet, Game1.getSourceRectForStandardTileSheet(spritesheet, item.ParentSheetIndex, 16, 16), Game1.pixelZoom));
                 ++index;
             }
             hintedDimensions.RemoveAll(d => visibleDimensions.Contains(d));
             var questionMarkSourceRectangle = new Rectangle(31 * 8 % SpriteText.spriteTexture.Width, 31 * 8 / SpriteText.spriteTexture.Width * 16, 8, 16);
-            foreach (var item in hintedDimensions)
+            foreach (var info in hintedDimensions)
             {
                 if (toSkip > 0)
                 {
@@ -161,6 +142,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 {
                     break;
                 }
+                var item = info.DimensionImplementation.Item;
                 var xOffset = (index % itemsPerRow) * Game1.tileSize;
                 var yOffset = ((index % itemsDisplayable) / itemsPerRow) * (Game1.tileSize + 6);
                 HintButtons.Add(new ClickableTextureComponent(Convert.ToString(item.ParentSheetIndex), new Rectangle(xPosition + xOffset, yPosition + yOffset, Game1.tileSize * 1, Game1.tileSize), "", "", SpriteText.spriteTexture, questionMarkSourceRectangle, Game1.pixelZoom));
@@ -192,18 +174,16 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             if (name == nodimensionplaceholder)
             {
                 Utility.TraceLog("Changing dimension to default shed");
-                DisplayedItem = null;
-                info = DisplayedItem == null ? null : ModEntry.DimensionData.getDimensionInfo(DisplayedItem);
-                ChangeDimensionSelection(null);
+                info = null;
             }
             else
             {
-                var id = Convert.ToInt32(name);
-                var item = ModEntry.DimensionData.getDimensionItem(id);
-                Utility.TraceLog($"Changing dimension to {item.DisplayName}");
-                DisplayedItem = item;
-                ChangeDimensionSelection(item);
+                var itemId = Convert.ToInt32(name);
+                info = ModEntry.DimensionData.getDimensionInfo(itemId);
+                Utility.TraceLog($"Changing dimension to {info.DisplayName}");
+                ChangeDimensionSelection(info);
             }
+            ChangeDimensionSelection(info);
         }
 
         private void downArrowPressed()
@@ -274,28 +254,51 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             {
                 if (heldItem != null)
                 {
-                    if (DisplayedItem != null && info.dimensionImplementation.CanAdd(heldItem))
+                    if (info != null && info.DimensionImplementation.CanAdd(heldItem))
                     {
-                        heldItem = info.dimensionImplementation.Add(heldItem);
+                        heldItem = info.DimensionImplementation.Add(heldItem);
+                        SetUpPositions();
                     }
-                    else if (DisplayedItem == null && !ModEntry.DimensionData.UnlockedDimensions.Any(item => item.canStackWith(heldItem)))// this should work on infos... TODO
+                    else if (info == null)
                     {
                         Game1.exitActiveMenu();
-                        DisplayedItem = heldItem;
-                        info = DisplayedItem == null ? null : ModEntry.DimensionData.getDimensionInfo(DisplayedItem);
-                        heldItem = null;
                         DelayedAction.functionAfterDelay(checkNewItem, 10);
                     }
                 }
-                else if (DisplayedItem != null && DisplayedItem.Stack > 0 && SlotItemBoxRect.Contains(clickedPoint))
+                else if (info != null && info.DimensionImplementation.Item.Stack > 0 && info.DimensionImplementation.Item.Stack != int.MaxValue && SlotItemBoxRect.Contains(clickedPoint))
                 {
-                    heldItem = DisplayedItem.getOne();
-                    heldItem.Stack = DisplayedItem.Stack;
-                    DisplayedItem.Stack = 0;
+                    var item = info.DimensionImplementation.Item;
+                    heldItem = item.getOne();
+                    heldItem.Stack = item.Stack;
+                    item.Stack = 0;
                     SetUpPositions();
                 }
             }
             base.receiveLeftClick(x, y, playSound);
+        }
+
+        private void checkNewItem()
+        {
+            var newItem = heldItem;
+            heldItem = null;
+            var newDimension = ModEntry.DimensionData.UndiscoveredDimensions.Where(info => info.DimensionImplementation.CanAdd(newItem)).SingleOrDefault();
+            Game1.multipleDialogues(new string[] { "...",
+                newDimension != null ? "The Shed glows for a moment.." : "Nothing seems to have happened"});
+            Game1.afterDialogues = delegate
+            {
+                if (newDimension != null)
+                {
+                    newItem = newDimension.DimensionImplementation.Add(newItem);
+                    ChangeDimensionSelection(newDimension);
+                    // Some of this heavy dimension logic should probably come out of here, stick more to gui stuff or something. It'll come around. TODO
+                    ModEntry.DimensionData.InitializeDimensionBuilding(newDimension);
+                }
+                if (newItem != null)
+                {
+                    Game1.playSound("throwDownITem");
+                    Game1.createItemDebris(newItem, Game1.player.getStandingPosition(), 2);
+                }
+            };
         }
 
         public override void leftClickHeld(int x, int y)
@@ -329,28 +332,6 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             {
                 scrollBar.bounds.Y = downArrow.bounds.Y - scrollBar.bounds.Height - 4;
             }
-        }
-
-        private void checkNewItem()
-        {// This makes no sense, that's why it's broken TODO
-            var item = ModEntry.DimensionData.getDimensionItem(DisplayedItem.ParentSheetIndex);
-            var newDimension = item != null && item.canStackWith(DisplayedItem);
-            Game1.multipleDialogues(new string[] { "...",
-                newDimension ? "The Shed glows for a moment.." : "Nothing seems to have happened"});
-            Game1.afterDialogues = delegate
-            {
-                if (newDimension)
-                {
-                    item.Stack = 0;
-                    item.addToStack(DisplayedItem);
-                    ChangeDimensionSelection(item);
-                }
-                else
-                {
-                    Game1.playSound("throwDownITem"); // How the fuck is this broken
-                    Game1.createItemDebris(DisplayedItem, Game1.player.getStandingPosition(), 2);
-                }
-            };
         }
 
         /// <summary>The method invoked when the player right-clicks on the lookup UI.</summary>
@@ -414,24 +395,19 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
 
             // box for item
             b.Draw(Game1.menuTexture, SlotItemBox, Game1.getSourceRectForStandardTileSheet(Game1.menuTexture, 10), Color.White, 0f, new Vector2(8f, 8f), 2f, SpriteEffects.None, 0.5f);
-            if (DisplayedItem != null && DisplayedItem.Stack > 0 && DisplayedItem.Stack != int.MaxValue)
+            if (info != null && info.DimensionImplementation.Item.Stack > 0 && info.DimensionImplementation.Item.Stack != int.MaxValue)
             {
-                DisplayedItem.drawInMenu(b, SlotItemBox + new Vector2(48, 48), 2f);
+                fixedFor2xDrawInMenu(info.DimensionImplementation.Item as SDVObject, b, SlotItemBox + new Vector2(48, 48), 2f, 1f, 0.9f, StackDrawType.Draw, Color.White, drawShadow: true);
             }
 
             var title = "Big Shed"; // TODO externalize
             var description = "Just a boring old shed.";
             var textShadowColor = Game1.textShadowColor;
-            if (DisplayedItem != null)
+            if (info != null)
             {
-                var dimensionInfo = ModEntry.DimensionData.getDimensionInfo(DisplayedItem);
-                title = dimensionInfo.dimensionImplementation.HintAllowed() && dimensionInfo.dimensionImplementation.Item.Stack == int.MaxValue ? "???" : dimensionInfo.DisplayName;
-                description = dimensionInfo.dimensionImplementation.CurrentDescription();
-                textShadowColor = dimensionInfo.TextShadowColor;
-                if (DisplayedItem.DisplayName.Contains("Crocus")) 
-                {
-                    Utility.Log("Bread is " + dimensionInfo.TextShadowColor + " default? " + (dimensionInfo.TextShadowColor.Equals(Game1.textShadowColor)));
-                }
+                title = info.DimensionImplementation.HintAllowed() && info.DimensionImplementation.Item.Stack == int.MaxValue ? "???" : info.DisplayName;
+                description = info.DimensionImplementation.CurrentDescription();
+                textShadowColor = info.TextShadowColor;
             }
             // Title like item hover text + centered
             var titleSize = Game1.dialogueFont.MeasureString(title);
@@ -535,6 +511,26 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             b.DrawString(font, text, position + new Vector2(0f, 2f), (Color)textShadowColor * alpha);
             b.DrawString(font, text, position + new Vector2(2f, 0f), (Color)textShadowColor * alpha);
             b.DrawString(font, text, position, (Color)textColor * 0.9f * alpha);
+        }
+        protected void fixedFor2xDrawInMenu(SDVObject item, SpriteBatch spriteBatch, Vector2 location, float scaleSize, float transparency, float layerDepth, StackDrawType drawStackNumber, Color color, bool drawShadow)
+        {
+            bool shouldDrawStackNumber = ((drawStackNumber == StackDrawType.Draw && item.maximumStackSize() > 1 && item.Stack > 1) || drawStackNumber == StackDrawType.Draw_OneInclusive) && (double)scaleSize > 0.3 && item.Stack != int.MaxValue;
+            if ((int)item.ParentSheetIndex != 590 && drawShadow)
+            {
+                spriteBatch.Draw(Game1.shadowTexture, location + new Vector2(32f, 48f), Game1.shadowTexture.Bounds, color * 0.5f, 0f, new Vector2(Game1.shadowTexture.Bounds.Center.X, Game1.shadowTexture.Bounds.Center.Y) * scaleSize, 3f, SpriteEffects.None, layerDepth - 0.0001f);
+            }
+            spriteBatch.Draw(Game1.objectSpriteSheet, location + new Vector2((int)(32f * scaleSize), (int)(32f * scaleSize)), Game1.getSourceRectForStandardTileSheet(Game1.objectSpriteSheet, item.ParentSheetIndex, 16, 16), color * transparency, 0f, new Vector2(8f, 8f) * scaleSize, 4f * scaleSize, SpriteEffects.None, layerDepth);
+            if (shouldDrawStackNumber)
+            {
+                SDVUtility.drawTinyDigits(item.Stack, spriteBatch, location + new Vector2((float)(64 - SDVUtility.getWidthOfTinyDigitString(item.Stack, 3f * scaleSize)) + 3f * scaleSize, 64f - 18f * scaleSize + 1f), 3f * scaleSize, 1f, color);
+            }
+            if (drawStackNumber != 0 && (int)item.Quality > 0)
+            {
+                Rectangle quality_rect = (((int)item.Quality < 4) ? new Rectangle(338 + ((int)item.Quality - 1) * 8, 400, 8, 8) : new Rectangle(346, 392, 8, 8));
+                Texture2D quality_sheet = Game1.mouseCursors;
+                float yOffset = (((int)item.Quality < 4) ? 0f : (((float)Math.Cos((double)Game1.currentGameTime.TotalGameTime.Milliseconds * Math.PI / 512.0) + 1f) * 0.05f));
+                spriteBatch.Draw(quality_sheet, location + new Vector2(-44f, -12f) * scaleSize + new Vector2(56f, 64f + yOffset), quality_rect, color * transparency, 0f, new Vector2(4f, 4f), 3f * scaleSize * (1f + yOffset), SpriteEffects.None, layerDepth);
+            }
         }
     }
 }

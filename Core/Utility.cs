@@ -143,5 +143,21 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
         }
+
+        internal static Texture2D getGreyscaledSpriteSheet(Texture2D colored)
+        {
+            var greyscale = new Texture2D(colored.GraphicsDevice, colored.Width, colored.Height);
+            var data = new Color[colored.Width * colored.Height];
+            colored.GetData(data);
+            for (var i = 0; i < data.Length; ++i)
+            {
+                var vals = data[i].ToVector4();
+                var q = (vals.X + vals.Y + vals.Z) / 3;
+                q /= vals.W; // optional - undo alpha premultiplication
+                data[i] = Color.FromNonPremultiplied(new Vector4(q, q, q, vals.W == 0.0f ? vals.W : 0.5f));
+            }
+            greyscale.SetData(data);
+            return greyscale;
+        }
     }
 }

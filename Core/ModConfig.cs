@@ -2,10 +2,11 @@
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using System.Collections.Generic;
+using FinalDoom.StardewValley.InterdimensionalShed.API;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
-    internal class ModConfig
+    internal class ModConfig : IInterdimensionalShedExtraDimensionModConfig
     {
         public bool OverrideFirstItem { get; set; } = false;
         public int? FirstItemId { get; set; } = null;
@@ -17,24 +18,6 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         public int? ThirdItemId { get; set; } = null;
         public int? ThirdItemCount { get; set; } = null;
         public int GoldCost { get; set; } = 75000;
-        public Hint DimensionHints { get; set; } = Hint.None;
-
-
-
-
-
-        public KeybindList ToggleShaftsKey { get; set; } = KeybindList.Parse("OemTilde");
-        public bool ForceShafts { get; set; } = false;
-        public Color HighlightRectangleRGBA { get; set; } = Color.Lime;
-        public string HighlightImageFilename { get; set; } = "cracked.png";
-
-
-        public enum Hint
-        {
-            None,
-            Random,
-            Daily,
-            All
-        }
+        public HintConfig DimensionHints { get; set; } = HintConfig.None;
     }
 }

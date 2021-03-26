@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FinalDoom.StardewValley.InterdimensionalShed.API;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
@@ -15,12 +16,13 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
     /// </summary>
     internal class SaveManager
     {
-        private readonly IEnumerable<ISaveHandler> saveableObjectsHandlers =
+        private readonly List<ISaveHandler> saveableObjectsHandlers = (
             from type in Utility.GetAllTypes()
             where !type.IsInterface && !type.IsAbstract && type.GetInterfaces().Any(i => (!i.IsGenericType && i.IsAssignableFrom(typeof(ISaveHandler))) || (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConvertingSaveHandler<>)))
             let priority = type.GetCustomAttributes(typeof(PriorityAttribute), false).Select(attr => ((PriorityAttribute)attr).Priority).SingleOrDefault()
             orderby priority descending
-            select (ISaveHandler)Activator.CreateInstance(type);
+            select (ISaveHandler)Activator.CreateInstance(type)
+            ).ToList();
         private Dictionary<ISaveHandler, IEnumerable<object>> reconversions;
 
         internal SaveManager()
@@ -33,11 +35,6 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         private void OnSaveLoaded_InitializeObjects(object sender, SaveLoadedEventArgs e)
         {
             Utility.TraceLog("Loading");
-            if (DimensionData.FarmLinkedToMultipleDimensions)
-            {
-                // Possibly unnecessary. Depends on host event rules
-                Game1.addMail(ModEntry.ShedPurchaseMailId, true, true);
-            }
             foreach (var handler in saveableObjectsHandlers)
             {
                 Utility.TraceLog($"Handler of type {handler.GetType().Name}");

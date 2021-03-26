@@ -11,9 +11,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AutoMapper" Version="10.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
     <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="3.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="InterdimensionalShedAPI">
+      <HintPath>..\API\bin\x86\Debug\net461\InterdimensionalShedAPI.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>

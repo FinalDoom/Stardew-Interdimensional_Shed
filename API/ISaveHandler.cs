@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed
+namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
     /// <summary>
     /// Implementing types will be called by <c>SaveManager</c> to handle saving persistent data.
@@ -64,7 +64,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
     /// <summary>
     /// Sets the loading priority for <c>ISaveHandler</c>s. Higher is loaded earlier.
     /// </summary>
-    /// <remarks>Probably best not to exceed 100 as that'll break dimension loading.</remarks>
+    /// <remarks>Probably best not to stick to less than 100 as that'll break dimension loading. This generally shouldn't be needed anyway.</remarks>
     [AttributeUsage(AttributeTargets.Class, Inherited = false)]
     public class PriorityAttribute : Attribute
     {

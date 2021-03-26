@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed
+namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
     [JsonObject(MemberSerialization.Fields)]
     public class DimensionInfo
@@ -43,7 +43,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             }
         }
         private string dimensionImplementationClass;
-        public Type DimensionImplementationClass { get => GetType().Assembly.GetType(dimensionImplementationClass); }
+        public Type DimensionImplementationClass { get => AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(dimensionImplementationClass)).Where(t => t != null).Single(); }
         public string BuildingId { get => buildingId; }
         private string mapNameBase;
         public string MapName { get => mapNameBase; }
@@ -54,7 +54,8 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             return stageCounts[stage];
         }
         [JsonIgnore]
-        internal IDimensionImplementation dimensionImplementation;
+        private IDimensionImplementation dimensionImplementation;
+        public IDimensionImplementation DimensionImplementation { get => dimensionImplementation; set => dimensionImplementation = value; }
 
         private DimensionInfo() { }
     }

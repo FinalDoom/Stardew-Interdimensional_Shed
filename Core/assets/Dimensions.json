@@ -17,7 +17,7 @@
     "description3": "",
     "textShadowColor": "Indigo",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -39,7 +39,7 @@
     "description3": "",
     "textShadowColor": "DimGray",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -61,7 +61,7 @@
     "description3": "",
     "textShadowColor": "BlueViolet",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -81,7 +81,7 @@
     "description3": "",
     "textShadowColor": "Yellow",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -103,7 +103,7 @@
     "description3": "",
     "textShadowColor": "DarkOrchid",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -125,7 +125,7 @@
     "description3": "",
     "textShadowColor": "Gold",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -147,7 +147,7 @@
     "description3": "",
     "textShadowColor": "Fuchsia",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -169,7 +169,7 @@
     "description3": "",
     "textShadowColor": "Gainsboro",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -191,7 +191,7 @@
     "description3": "",
     "textShadowColor": "Fuchsia",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -213,7 +213,7 @@
     "description3": "",
     "textShadowColor": "Linen",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -232,7 +232,7 @@
     "description3": "",
     "textShadowColor": "GhostWhite",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -253,7 +253,7 @@
     "description3": "",
     "textShadowColor": "Chocolate",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -275,7 +275,7 @@
     "description3": "",
     "textShadowColor": "Violet",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -297,7 +297,7 @@
     "description3": "There are presents!!",
     "textShadowColor": "DodgerBlue",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -319,7 +319,7 @@
     "description3": "",
     "textShadowColor": "Sienna",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -341,7 +341,7 @@
     "description3": "",
     "textShadowColor": "Yellow",
     "textShadowAlpha": 0.5,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -363,7 +363,7 @@
     "description3": "",
     "textShadowColor": "Green",
     "textShadowAlpha": 0.4,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -385,7 +385,7 @@
     "description3": "",
     "textShadowColor": "Aqua",
     "textShadowAlpha": 0.5,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -407,7 +407,7 @@
     "description3": "",
     "textShadowColor": "Red",
     "textShadowAlpha": 0.4,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -429,7 +429,7 @@
     "description3": "",
     "textShadowColor": "MediumPurple",
     "textShadowAlpha": 0.4,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -451,7 +451,7 @@
     "description3": "",
     "textShadowColor": "Orange",
     "textShadowAlpha": 0.5,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -473,7 +473,7 @@
     "description3": "",
     "textShadowColor": "PaleGreen",
     "textShadowAlpha": 0.5,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -495,7 +495,7 @@
     "description3": "",
     "textShadowColor": "SkyBlue",
     "textShadowAlpha": 1,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   },
   {
@@ -517,7 +517,7 @@
     "description3": "",
     "textShadowColor": "Fuchsia",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.API.DimensionImplementation",
     "ignoreQuality": "TRUE"
   }
 ]

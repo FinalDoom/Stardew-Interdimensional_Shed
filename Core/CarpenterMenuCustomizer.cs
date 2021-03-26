@@ -52,7 +52,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                     farm.buildings.Remove(toUpgrade);
                     farm.buildings.Add(idsb);
 
-                    ModEntry.DimensionData.InitializeDimensionBuildings();
+                    ModEntry.DimensionData.InitializeDimensionBuilding(idsb.SelectedDimension);
 
                     Utility.Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked_InterceptBuildingUpgrade;
                 }

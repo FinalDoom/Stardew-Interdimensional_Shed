@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FinalDoom.StardewValley.InterdimensionalShed.API;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
@@ -19,8 +20,16 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         private const string ModData_SelectedDimensionItemKey = "SelectedDimensionItemId";
         private static readonly Point ItemSlotTileOffset = new Point(1, 0);
 
-        private Item selectedDimensionItem = null;
-        internal Item SelectedDimensionItemId { get => selectedDimensionItem; set => selectedDimensionItem = value; }
+        private DimensionInfo selectedDimension = null;
+        internal DimensionInfo SelectedDimension
+        {
+            get => selectedDimension;
+            set 
+            {
+                selectedDimension = value;
+                modData[ModData_SelectedDimensionItemKey] = value == null ? "none" : value.DimensionImplementation.Item.ParentSheetIndex.ToString();
+            }
+        }
 
         internal InterdimensionalShedBuilding(Building building) : base(new BluePrint(ModEntry.BlueprintId), new Vector2(building.tileX.Value, building.tileY.Value))
         {
@@ -30,12 +39,12 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             modData = building.modData;
             modData[ModEntry.SaveKey] = "true";
             var item = modData.ContainsKey(ModData_SelectedDimensionItemKey) ? modData[ModData_SelectedDimensionItemKey] : "769";
-            selectedDimensionItem = item.Equals("none") ? null : ModEntry.DimensionData.getDimensionItem(Convert.ToInt32(item));
-            if (!modData.ContainsKey(ModData_SelectedDimensionItemKey))
+            var dimension = item.Equals("none") ? null : ModEntry.DimensionData.getDimensionInfo(Convert.ToInt32(item));
+            if (dimension != null && !modData.ContainsKey(ModData_SelectedDimensionItemKey))
             {
-                modData.Add(ModData_SelectedDimensionItemKey, selectedDimensionItem.ParentSheetIndex.ToString());
-                Utility.Log("New " + typeof(InterdimensionalShedBuilding).Name + " dimension set to " + selectedDimensionItem.DisplayName + " dimension");
+                Utility.Log("New " + typeof(InterdimensionalShedBuilding).Name + " dimension set to " + dimension.DisplayName + " dimension");
             }
+            SelectedDimension = dimension;
         }
 
         protected override GameLocation getIndoors(string nameOfIndoorsWithoutUnique)
@@ -50,22 +59,20 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 // Do something with mutexes here
                 if (Game1.activeClickableMenu == null || Game1.activeClickableMenu is not ItemSlotMenu)
                 {
-                    Game1.activeClickableMenu = new ItemSlotMenu(selectedDimensionItem, item => selectedDimensionItem = item);
+                    Game1.activeClickableMenu = new ItemSlotMenu(selectedDimension, info => SelectedDimension = info);
                 }
-                //new ItemSlotMenu(logMenuAction);
-                // Open up the item slot gui
                 // Consider a flag if the gui is currently open to prevent other players opening/duping/whatever like chests
                 return true;
             }
-            else if (selectedDimensionItem != null && who.IsLocalPlayer && tileLocation.X == (float)(humanDoor.X + tileX.Value) && tileLocation.Y == (float)(humanDoor.Y + tileY.Value))
+            else if (selectedDimension != null && who.IsLocalPlayer && tileLocation.X == (float)(humanDoor.X + tileX.Value) && tileLocation.Y == (float)(humanDoor.Y + tileY.Value))
             {
-                if (selectedDimensionItem.Stack == 0)
+                if (selectedDimension.DimensionImplementation.Item.Stack == 0)
                 {
                     return false;
                 }
                 var warpTargetX = tileX.Value + humanDoor.X;
                 var warpTargetY = tileY.Value + humanDoor.Y + 1;
-                ModEntry.DimensionData.doDimensionWarp(selectedDimensionItem, who, new Point(warpTargetX, warpTargetY));
+                ModEntry.DimensionData.doDimensionWarp(selectedDimension, who, new Point(warpTargetX, warpTargetY));
                 // Consider Myst sound here
                 who.currentLocation.playSoundAt("doorClose", tileLocation);
                 return true;

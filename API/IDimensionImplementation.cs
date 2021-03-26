@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed
+namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
     public interface IDimensionImplementation
     {
@@ -15,5 +15,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         public bool CanAdd(Item item);
         public Item Add(Item item);
         public Item Item { get; }
+        public int TotalDimensionCount { get; set; }
+        public int DiscoveredDimensionCount { get; set; }
     }
 }

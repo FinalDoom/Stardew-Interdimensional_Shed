@@ -1,0 +1,29 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <AssemblyName>InterdimensionalShed_EasterEggDimensions</AssemblyName>
+    <RootNamespace>FinalDoom.StardewValley.InterdimensionalShed.EasterEggDimensions</RootNamespace>
+    <Version>0.0.1</Version>
+    <TargetFramework>net461</TargetFramework>
+	  <LangVersion>latest</LangVersion>
+    <Platforms>x86</Platforms>
+    <PlatformTarget>x86</PlatformTarget>
+	  <GamePath>D:/SteamLibrary/steamapps/common/Stardew Valley</GamePath>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Pathoschild.Stardew.ModBuildConfig" Version="3.2.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="InterdimensionalShedAPI">
+      <HintPath>..\API\bin\x86\Debug\net461\InterdimensionalShedAPI.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="manifest.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+</Project>

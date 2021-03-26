@@ -6,19 +6,25 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed
+namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
     public class DimensionImplementation : IDimensionImplementation
     {
+        protected readonly IInterdimensionalShedExtraDimensionModConfig config;
         protected readonly DimensionInfo dimensionInfo;
         protected readonly Item item;
         protected readonly int maxItemsConsumed;
         protected readonly int dimensionIndex;
+        protected int totalDimensionCount;
+        public int TotalDimensionCount { get => totalDimensionCount; set => totalDimensionCount = value; }
+        protected int unlockedDimensionCount;
+        public int DiscoveredDimensionCount { get => unlockedDimensionCount; set => unlockedDimensionCount = value; }
 
         public Item Item { get => item; }
 
-        public DimensionImplementation(DimensionInfo info, Item item, int dimensionIndex)
+        public DimensionImplementation(IInterdimensionalShedExtraDimensionModConfig config, DimensionInfo info, Item item, int dimensionIndex)
         {
+            this.config = config;
             dimensionInfo = info;
             this.item = item;
             maxItemsConsumed = Math.Min(dimensionInfo.StageRequirement(dimensionInfo.Stages.Max()), this.item.maximumStackSize());
@@ -45,29 +51,27 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
 
         public virtual bool HintAllowed()
         {
-            var hints = ModEntry.config.DimensionHints;
-            if (hints == ModConfig.Hint.All)
+            var hintConfig = config.DimensionHints;
+            if (hintConfig == HintConfig.All)
             {
                 return true;
             }
-            if (hints == ModConfig.Hint.Daily)
+            if (hintConfig == HintConfig.Daily)
             {
                 var daysPlayed = Game1.stats.daysPlayed;
-                var dimensionCount = ModEntry.DimensionData.DimensionCount;
                 // Plus or minus one day
-                if (dimensionIndex >= ((daysPlayed + dimensionCount - 1) % dimensionCount) && dimensionIndex <= ((daysPlayed + dimensionCount + 1) % dimensionCount))
+                if (dimensionIndex >= ((daysPlayed + totalDimensionCount - 1) % totalDimensionCount) && dimensionIndex <= ((daysPlayed + totalDimensionCount + 1) % totalDimensionCount))
                 {
                     return true;
                 }
             }
-            if (hints == ModConfig.Hint.Random)
+            if (hintConfig == HintConfig.Random)
             {
-                var r = new Random((int)Game1.stats.daysPlayed * ModEntry.DimensionData.UnlockedDimensions.Count() + (int)Game1.uniqueIDForThisGame / 2);
-                var dimensionCount = ModEntry.DimensionData.DimensionCount;
+                var r = new Random((int)Game1.stats.daysPlayed * unlockedDimensionCount + (int)Game1.uniqueIDForThisGame / 2);
                 var count = r.Next(4) + 1;
                 for (var i = 0; i < count; ++i)
                 {
-                    if (dimensionIndex == r.Next(dimensionCount))
+                    if (dimensionIndex == r.Next(totalDimensionCount))
                     {
                         return true;
                     }
@@ -100,11 +104,11 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             {
                 var actualQuality = o.Quality;
                 o.Quality = t.Quality;
-                var canStack = t.canStackWith(o) && o.Stack >= 1 && t.Stack < maxItemsConsumed;
+                var canStack = t.canStackWith(o) && o.Stack >= 1 && (t.Stack == int.MaxValue || t.Stack <= maxItemsConsumed);
                 o.Quality = actualQuality;
                 return canStack;
             }
-            return this.item.canStackWith(item) && item.Stack >= 1 && this.item.Stack < maxItemsConsumed;
+            return this.item.canStackWith(item) && item.Stack >= 1 && (this.item.Stack == int.MaxValue || this.item.Stack <= maxItemsConsumed);
         }
 
         public virtual Item Add(Item item)
@@ -114,6 +118,10 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 return item;
             }
 
+            if (this.item.Stack == int.MaxValue)
+            {
+                this.item.Stack = 0;
+            }
             int remainder;
             if (dimensionInfo.IgnoreQuality && item is Object o && this.item is Object t)
             {
