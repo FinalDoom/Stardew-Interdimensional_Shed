@@ -1,6 +1,7 @@
 ﻿using StardewModdingAPI.Events;
 using StardewValley;
 using SDVUtility = StardewValley.Utility;
+using Object = StardewValley.Object;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,19 +20,24 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         private const string ModData_DimensionItemsKey = "InterdimensionalShedItems";
         internal const string ModData_ShedDimensionKey = "InterdimensionalShedLinkedDimensionName";
 
-        private readonly List<DimensionInfo> dimensionInfo = Utility.Helper.Content.Load<List<DimensionInfo>>("assets/Dimensions.json", ContentSource.ModFolder);
+        private readonly List<DimensionInfo> dimensionInfo = new List<DimensionInfo>();
 
         private readonly List<Item> dimensionItems = new List<Item>();
+
         /// <summary>
         /// Items associated with dimensions that have been discovered/unlocked.
         /// </summary>
-        public List<Item> UnlockedDimensions
-        {
-            get
-            {
-                return dimensionItems.Where(item => item.Stack != int.MaxValue).ToList();
-            }
-        }
+        public List<Item> UnlockedDimensions { get => dimensionItems.Where(item => item.Stack != int.MaxValue).ToList(); }
+
+        /// <summary>
+        /// Items associated with undiscovered dimensions that can be hinted according to configuration.
+        /// </summary>
+        public List<Item> HintedDimensions { get => dimensionInfo.Where(di => di.dimensionImplementation.HintAllowed()).Select(di => di.dimensionImplementation.Item).ToList(); }
+
+        /// <summary>
+        /// Total count of all dimensions configured.
+        /// </summary>
+        public int DimensionCount { get => dimensionInfo.Count(); }
 
         /// <summary>
         /// Returns <c>true</c> if the multiple dimensions provided by this mod have been initialized on this save.
@@ -50,6 +56,14 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
          * Property Utility Functions
          ********/
 
+        // TODO come up with a solution for handling un-loaded dimensions
+        // Eg. freeze time in them or whatever will prevent updates, if possible.. move them out of the farm to local store (restore on save), etc. Not sure yet.
+        // Make sure they can't be entered obviously
+
+        /// <summary>
+        /// Returns true if dimension info for the specified building name has been loaded.
+        /// </summary>
+        public bool isDimensionInfoLoaded(string buildingId) => dimensionInfo.Any(di => di.BuildingId == buildingId);
         /// <summary>
         /// Gets the info for the dimension associated with the passed item.
         /// </summary>
@@ -162,6 +176,21 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             /// </summary>
             public void InitializeAfterLoad()
             {
+                // Initialize all DimensionInfo
+                dd.dimensionInfo.Clear();
+                Utility.Log($"Loading dimensions: Interdimensional Shed (Default)");
+                dd.dimensionInfo.AddRange(Utility.Helper.Content.Load<List<DimensionInfo>>("assets/Dimensions.json", ContentSource.ModFolder));
+                var dimensionInfoProviders =
+                    from type in Utility.GetAllTypes()
+                    where !type.IsInterface && !type.IsAbstract && type.GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IDimensionInfoProvider)))
+                    select (IDimensionInfoProvider)Activator.CreateInstance(type);
+                foreach (var dip in dimensionInfoProviders)
+                {
+                    Utility.Log($"Loading dimensions: {dip.DimensionCollectionName}");
+                    dd.dimensionInfo.AddRange(dip.Dimensions);
+                }
+                // TODO resolve new/old dimension info
+
                 // Initialize base data maps and such
                 var farmModData = Game1.getFarm().modData;
                 var itemKVPs = new Dictionary<int, int>();
@@ -180,7 +209,12 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                     var unlocked = itemKVPs.ContainsKey(info.ItemId);
                     var item = SDVUtility.getItemFromStandardTextDescription("O " + info.ItemId + " 0", null);
                     item.Stack = unlocked ? itemKVPs[info.ItemId] : item.ParentSheetIndex == ItemId_VoidEssence ? voidEssenceCount : int.MaxValue;
+                    if (!info.IgnoreQuality && item is Object i)
+                    {
+                        i.Quality = info.Quality;
+                    }
                     //Utility.TraceLog($"Initializing dimension item: id {item.ParentSheetIndex} named {item.DisplayName} category {item.getCategoryName()} number {item.Category}");
+                    info.dimensionImplementation = (IDimensionImplementation)Activator.CreateInstance(info.DimensionImplementationClass, info, item, dd.dimensionItems.Count());
                     dd.dimensionItems.Add(item);
                 });
             }

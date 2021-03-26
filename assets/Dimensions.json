@@ -12,149 +12,209 @@
     "mapNameBase": "Interdimensional Shed",
     "displayName": "Void Dimension",
     "hint": "If you're seeing this, you've done something terrible.",
-    "description": "It's like something from beyond is trying to get in. Beware of the cracks."
+    "description1": "It's like something from beyond is trying to get in. Beware of the cracks.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Indigo",
+    "textShadowAlpha": 0.2,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 305,
     "stageCounts": {
-      "1": 12,
-      "2": 47,
-      "3": 116,
-      "4": 231,
-      "5": 339,
-      "6": 770
+      "1": 10,
+      "2": 45,
+      "3": 120,
+      "4": 240,
+      "5": 350,
+      "6": 775
     },
     "buildingId": "EggDimension",
     "mapNameBase": "Shed2",
     "displayName": "Egg Dimension",
     "hint": "Are chickens really from another dimension?",
-    "description": "It smells like a warm breakfast, and I'm seeing spots."
+    "description1": "It smells like a warm breakfast, and I'm seeing spots.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "DimGray",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 422,
     "stageCounts": {
       "1": 3,
-      "2": 12,
+      "2": 10,
       "3": 30,
       "4": 60,
-      "5": 88,
+      "5": 100,
       "6": 200
     },
     "buildingId": "MushroomDimension",
     "mapNameBase": "Shed2",
     "displayName": "Mushroom Dimension",
     "hint": "What's so magical about it if it just grows in a cave?",
-    "description": "This plays looks like I can really let out my inner \"Fun gi"
+    "description1": "This place looks like I can really let out my inner \"Fun gi",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "BlueViolet",
+    "textShadowAlpha": 0.2,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 768,
     "stageCounts": {
       "1": 50,
       "2": 150,
-      "3": 375,
-      "4": 750
+      "3": 380,
+      "4": 760
     },
     "buildingId": "SunDimension",
     "mapNameBase": "Shed2",
     "displayName": "Sunny Dimension",
     "hint": "Suncreen is recommended.",
-    "description": "It's bright and warm here all the time."
+    "description1": "It's bright and warm here all the time.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Yellow",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 155,
     "stageCounts": {
       "1": 3,
-      "2": 12,
+      "2": 10,
       "3": 30,
       "4": 60,
-      "5": 88,
+      "5": 100,
       "6": 200
     },
     "buildingId": "StrangeVegetableDimension",
     "mapNameBase": "Shed2",
     "displayName": "Strange Vegetable Dimension",
     "hint": "What is it? A vegetable? Something magical?",
-    "description": "Why does this place even exist (or some other line showing PC confusion"
+    "description1": "Why does this place even exist? And why is it filled with slimy creatures?",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "DarkOrchid",
+    "textShadowAlpha": 0.2,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 373,
     "stageCounts": {
       "1": 1,
-      "2": 3,
-      "3": 6,
-      "4": 12,
-      "5": 18,
-      "6": 40
+      "2": 5,
+      "3": 10,
+      "4": 20,
+      "5": 25,
+      "6": 50
     },
     "buildingId": "GourdDimension",
     "mapNameBase": "Shed2",
     "displayName": "Gourd Dimension",
     "hint": "Fall has exemplary colors.",
-    "description": "A slight fall breeze is blowing. It feels magical."
+    "description1": "A faint fall breeze is blowing. There's magic in the air.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Gold",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 279,
     "stageCounts": {
       "1": 1,
-      "2": 2,
-      "3": 3,
-      "4": 5,
-      "5": 7,
-      "6": 16
+      "2": 0,
+      "3": 0,
+      "4": 0,
+      "5": 0,
+      "6": 25
     },
     "buildingId": "CandyDimension",
     "mapNameBase": "Shed2",
     "displayName": "Candy Dimension",
-    "hint": "Dude. Sweet!",
-    "description": "I hope my dentist doesn't learn about this"
+    "hint": "Careful to not break your teeth.",
+    "description1": "I hope my dentist doesn't learn about this",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Fuchsia",
+    "textShadowAlpha": 0.2,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 567,
     "stageCounts": {
-      "1": 7,
-      "2": 28,
-      "3": 69,
-      "4": 137,
+      "1": 5,
+      "2": 30,
+      "3": 70,
+      "4": 140,
       "5": 200,
-      "6": 455
+      "6": 450
     },
     "buildingId": "MarbleDimension",
     "mapNameBase": "Shed2",
     "displayName": "Marble Dimension",
     "hint": "Maybe I should make a statue garden...",
-    "description": "It's so smooth and bright; but kinda cold."
+    "description1": "It's so smooth and bright; but kinda cold.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Gainsboro",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 74,
     "stageCounts": {
       "1": 1,
-      "2": 3,
-      "3": 8,
-      "4": 15,
-      "5": 23,
+      "2": 5,
+      "3": 10,
+      "4": 20,
+      "5": 25,
       "6": 50
     },
     "buildingId": "RainbowDimension",
     "mapNameBase": "Shed2",
     "displayName": "Rainbow Dimension",
     "hint": "In a galaxy far far away...",
-    "description": "Maybe there are unicorns here. At least there are rainbows."
+    "description1": "Maybe there are unicorns here. At least there are rainbows.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Fuchsia",
+    "textShadowAlpha": 0.2,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 446,
     "stageCounts": {
       "1": 2,
-      "2": 6,
-      "3": 14,
-      "4": 27,
-      "5": 39,
-      "6": 89
+      "2": 5,
+      "3": 10,
+      "4": 20,
+      "5": 50,
+      "6": 100
     },
     "buildingId": "FuzzyDimension",
     "mapNameBase": "Shed2",
     "displayName": "Fuzzy Dimension",
     "hint": "What makes them lucky? Budding?",
-    "description": "*'s so fluffy I'm gonna die!"
+    "description1": "It's so fluffy I'm gonna die!",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Linen",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 80,
@@ -163,16 +223,22 @@
       "2": 240,
       "3": 600
     },
-    "buildingId": "GlassDimension",
+    "buildingId": "CrystalDimension",
     "mapNameBase": "Shed2",
-    "displayName": "Glass Dimension",
+    "displayName": "Crystal Dimension",
     "hint": "You might encounter some pane if you don't keep an eye out, especially in a chase.",
-    "description": "It's full of crystalline formations."
+    "description1": "It's full of crystalline formations.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "GhostWhite",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 216,
     "stageCounts": {
-      "1": 34,
+      "1": 35,
       "2": 100,
       "3": 250,
       "4": 500,
@@ -182,23 +248,35 @@
     "mapNameBase": "Shed2",
     "displayName": "Bread Dimension",
     "hint": "It smells so good and is even better to eat.",
-    "description": "It's like being down the street from a bakery."
+    "description1": "It's like being down the street from a bakery.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Chocolate",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 418,
     "stageCounts": {
-      "1": 17,
+      "1": 15,
       "2": 50,
-      "3": 125,
-      "4": 250,
-      "5": 367,
-      "6": 834
+      "3": 130,
+      "4": 260,
+      "5": 375,
+      "6": 825
     },
     "buildingId": "FlowerDimension",
     "mapNameBase": "Shed2",
     "displayName": "Flower Dimension",
     "hint": "I've always wanted to see a massive field of tulips.",
-    "description": "The colors are astounding. Watch your step."
+    "description1": "The colors are astounding. Watch your step.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Violet",
+    "textShadowAlpha": 0.2,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 414,
@@ -207,118 +285,160 @@
       "2": 20,
       "3": 50,
       "4": 100,
-      "5": 147,
-      "6": 334
+      "5": 150,
+      "6": 325
     },
     "buildingId": "WinterDimension",
     "mapNameBase": "Shed2",
     "displayName": "Winter Dimension",
     "hint": "It's frozen but somehow grows anyway.",
-    "description": "I wonder if this is Niflheim. So cold."
+    "description1": "It's cold. What did you expect?",
+    "description2": "Maybe santa delivers presents here.",
+    "description3": "There are presents!!",
+    "textShadowColor": "DodgerBlue",
+    "textShadowAlpha": 0.2,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 724,
     "stageCounts": {
       "1": 5,
       "2": 15,
-      "3": 38,
-      "4": 75,
-      "5": 110,
+      "3": 40,
+      "4": 80,
+      "5": 100,
       "6": 250
     },
     "buildingId": "StickyDimension",
     "mapNameBase": "Shed2",
     "displayName": "Sticky Dimension",
     "hint": "Sticky, sweet, drippy, yum.",
-    "description": "My shoes stick to the floor. Gross."
+    "description1": "My shoes stick to the floor. Gross.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Sienna",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 904,
     "stageCounts": {
       "1": 3,
-      "2": 12,
-      "3": 29,
-      "4": 58,
-      "5": 85,
-      "6": 193
+      "2": 10,
+      "3": 30,
+      "4": 60,
+      "5": 75,
+      "6": 200
     },
     "buildingId": "BananaDimension",
     "mapNameBase": "Shed2",
     "displayName": "Banana Dimension",
     "hint": "Mine bends to the left.",
-    "description": "It seems like someone is leaving one of the villager's favorite things."
+    "description1": "What are these random items that keep appearing here. Is there some connection?",
+    "description2": "It seems like someone is leaving one of the villager's favorite things.",
+    "description3": "",
+    "textShadowColor": "Yellow",
+    "textShadowAlpha": 0.5,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 60,
     "stageCounts": {
       "1": 3,
-      "2": 12,
+      "2": 10,
       "3": 30,
       "4": 60,
-      "5": 88,
+      "5": 100,
       "6": 200
     },
     "buildingId": "Shed1Dimension",
     "mapNameBase": "Shed2",
     "displayName": "Shed 1",
     "hint": "(green text) Seems like a pretty normal crystal.",
-    "description": "TODO"
+    "description1": "It's a shed. A big shed. A BIG Green shed.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Green",
+    "textShadowAlpha": 0.4,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 62,
     "stageCounts": {
-      "1": 6,
-      "2": 17,
-      "3": 42,
-      "4": 84,
-      "5": 123,
-      "6": 278
+      "1": 5,
+      "2": 15,
+      "3": 40,
+      "4": 80,
+      "5": 125,
+      "6": 275
     },
     "buildingId": "Shed2Dimension",
     "mapNameBase": "Shed2",
     "displayName": "Shed 2",
     "hint": "(blue text) Seems like a pretty normal crystal.",
-    "description": "TODO"
+    "description1": "TODO",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Aqua",
+    "textShadowAlpha": 0.5,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 64,
     "stageCounts": {
       "1": 3,
-      "2": 12,
+      "2": 10,
       "3": 30,
       "4": 60,
-      "5": 88,
+      "5": 100,
       "6": 200
     },
     "buildingId": "Shed3Dimension",
     "mapNameBase": "Shed2",
     "displayName": "Shed 3",
     "hint": "(red text) Seems like a pretty normal crystal.",
-    "description": "TODO"
+    "description1": "TODO",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Red",
+    "textShadowAlpha": 0.4,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 66,
     "stageCounts": {
       "1": 10,
       "2": 30,
-      "3": 75,
-      "4": 150,
-      "5": 220,
+      "3": 80,
+      "4": 160,
+      "5": 225,
       "6": 500
     },
     "buildingId": "Shed4Dimension",
     "mapNameBase": "Shed2",
     "displayName": "Shed 4",
     "hint": "(purple text) Seems like a pretty normal crystal.",
-    "description": "TODO"
+    "description1": "TODO",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "MediumPurple",
+    "textShadowAlpha": 0.4,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 68,
     "stageCounts": {
-      "1": 13,
-      "2": 38,
-      "3": 94,
-      "4": 188,
+      "1": 15,
+      "2": 40,
+      "3": 90,
+      "4": 180,
       "5": 275,
       "6": 625
     },
@@ -326,38 +446,78 @@
     "mapNameBase": "Shed2",
     "displayName": "Shed 5",
     "hint": "(orange text) Seems like a pretty normal crystal.",
-    "description": "TODO"
+    "description1": "TODO",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Orange",
+    "textShadowAlpha": 0.5,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 70,
     "stageCounts": {
       "1": 4,
       "2": 15,
-      "3": 38,
-      "4": 75,
-      "5": 110,
+      "3": 40,
+      "4": 80,
+      "5": 100,
       "6": 250
     },
     "buildingId": "Shed6Dimension",
     "mapNameBase": "Shed2",
     "displayName": "Shed 6",
     "hint": "(jade text) Seems like a pretty normal crystal.",
-    "description": "TODO"
+    "description1": "TODO",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "PaleGreen",
+    "textShadowAlpha": 0.5,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   },
   {
     "itemId": 72,
     "stageCounts": {
       "1": 1,
-      "2": 7,
-      "3": 17,
-      "4": 34,
-      "5": 47,
-      "6": 107
+      "2": 5,
+      "3": 20,
+      "4": 40,
+      "5": 50,
+      "6": 100
     },
     "buildingId": "Shed7Dimension",
     "mapNameBase": "Shed2",
     "displayName": "Shed 7",
     "hint": "(light blue text) Seems like a pretty normal crystal.",
-    "description": "TODO"
+    "description1": "It's a shed. A big shed. A BIG sky blue shed.",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "SkyBlue",
+    "textShadowAlpha": 1,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
+  },
+  {
+    "itemId": 908,
+    "stageCounts": {
+      "1": 20,
+      "2": 55,
+      "3": 140,
+      "4": 280,
+      "5": 400,
+      "6": 900
+    },
+    "buildingId": "FishingDimension",
+    "mapNameBase": "Shed2",
+    "displayName": "Fishing Dimension",
+    "hint": "TODO",
+    "description1": "TODO",
+    "description2": "",
+    "description3": "",
+    "textShadowColor": "Fuchsia",
+    "textShadowAlpha": 0.2,
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DimensionImplementation",
+    "ignoreQuality": "TRUE"
   }
 ]

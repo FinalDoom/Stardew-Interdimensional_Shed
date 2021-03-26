@@ -21,10 +21,14 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         private static DimensionData dimensionData;
         internal static DimensionData DimensionData { get => dimensionData; }
 
-        private ModConfig config;
+        internal static ModConfig config;
+        internal static Texture2D myMenuTexture;
+        internal static Texture2D myMenuTextureUncolored;
 
         public override void Entry(IModHelper helper)
         {
+            myMenuTexture = Helper.Content.Load<Texture2D >("assets/MenuTiles.png", ContentSource.ModFolder);
+            myMenuTextureUncolored = Helper.Content.Load<Texture2D>("assets/MenuTilesUncolored.png", ContentSource.ModFolder);
             Utility.Mod = this;
 
             dimensionData = new DimensionData();

@@ -22,7 +22,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         private Item selectedDimensionItem = null;
         internal Item SelectedDimensionItemId { get => selectedDimensionItem; set => selectedDimensionItem = value; }
 
-        internal InterdimensionalShedBuilding(Building building) : base(new BluePrint(building.buildingType.Value), new Vector2(building.tileX.Value, building.tileY.Value))
+        internal InterdimensionalShedBuilding(Building building) : base(new BluePrint(ModEntry.BlueprintId), new Vector2(building.tileX.Value, building.tileY.Value))
         {
             // Keep the correct indoor in the shed, but override the warp to go to one of the other sheds we create
             indoors.Value = building.indoors.Value;

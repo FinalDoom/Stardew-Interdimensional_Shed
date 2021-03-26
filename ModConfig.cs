@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
-    class ModConfig
+    internal class ModConfig
     {
         public bool OverrideFirstItem { get; set; } = false;
         public int? FirstItemId { get; set; } = null;
@@ -17,6 +17,24 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         public int? ThirdItemId { get; set; } = null;
         public int? ThirdItemCount { get; set; } = null;
         public int GoldCost { get; set; } = 75000;
+        public Hint DimensionHints { get; set; } = Hint.None;
 
+
+
+
+
+        public KeybindList ToggleShaftsKey { get; set; } = KeybindList.Parse("OemTilde");
+        public bool ForceShafts { get; set; } = false;
+        public Color HighlightRectangleRGBA { get; set; } = Color.Lime;
+        public string HighlightImageFilename { get; set; } = "cracked.png";
+
+
+        public enum Hint
+        {
+            None,
+            Random,
+            Daily,
+            All
+        }
     }
 }

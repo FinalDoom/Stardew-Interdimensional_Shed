@@ -24,6 +24,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 if (_mod == null) _mod = value;
             }
         }
+
         public static IModHelper Helper
         {
             get
@@ -136,6 +137,11 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             {
                 destination.Add(x);
             }
+        }
+
+        internal static IEnumerable<Type> GetAllTypes()
+        {
+            return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
         }
     }
 }

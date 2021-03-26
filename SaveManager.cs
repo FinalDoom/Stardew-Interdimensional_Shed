@@ -16,7 +16,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
     internal class SaveManager
     {
         private readonly IEnumerable<ISaveHandler> saveableObjectsHandlers =
-            from type in typeof(SaveManager).Assembly.GetTypes()
+            from type in Utility.GetAllTypes()
             where !type.IsInterface && !type.IsAbstract && type.GetInterfaces().Any(i => (!i.IsGenericType && i.IsAssignableFrom(typeof(ISaveHandler))) || (i.IsGenericType && i.GetGenericTypeDefinition() == typeof(IConvertingSaveHandler<>)))
             let priority = type.GetCustomAttributes(typeof(PriorityAttribute), false).Select(attr => ((PriorityAttribute)attr).Priority).SingleOrDefault()
             orderby priority descending
@@ -48,7 +48,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
 
         private void GameLoop_Saving_PrepareObjectsForSaving(object sender, SavingEventArgs e)
         {
-            //var saveableTypes = from type in GetType().Assembly.GetTypes()
+            //var saveableTypes = from type in Utility.GetAllTypes()
             //                    where typeof(ISaveableType).IsAssignableFrom(type)
             //                    select type;
             // Save static types
