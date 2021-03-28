@@ -8,27 +8,38 @@ using System.Threading.Tasks;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
-    public class DimensionImplementation : IDimensionImplementation
+    /// <summary>
+    /// Base <see cref="IDimensionImplementation"/> that provides default implementation of many functions.
+    /// </summary>
+    public abstract class DimensionImplementation : IDimensionImplementation
     {
-        protected readonly IInterdimensionalShedExtraDimensionModConfig config;
+        static protected int totalDimensionCount;
+        static protected int discoveredDimensionCount;
+
+        public static void resetDimensionCounts()
+        {
+            totalDimensionCount = 0;
+            discoveredDimensionCount = 0;
+        }
+
         protected readonly DimensionInfo dimensionInfo;
         protected readonly Item item;
         protected readonly int maxItemsConsumed;
         protected readonly int dimensionIndex;
-        protected int totalDimensionCount;
-        public int TotalDimensionCount { get => totalDimensionCount; set => totalDimensionCount = value; }
-        protected int unlockedDimensionCount;
-        public int DiscoveredDimensionCount { get => unlockedDimensionCount; set => unlockedDimensionCount = value; }
 
         public Item Item { get => item; }
 
-        public DimensionImplementation(IInterdimensionalShedExtraDimensionModConfig config, DimensionInfo info, Item item, int dimensionIndex)
+        public DimensionImplementation(DimensionInfo info, Item item, int dimensionIndex)
         {
-            this.config = config;
             dimensionInfo = info;
             this.item = item;
             maxItemsConsumed = Math.Min(dimensionInfo.StageRequirement(dimensionInfo.Stages.Max()), this.item.maximumStackSize());
             this.dimensionIndex = dimensionIndex;
+            totalDimensionCount++;
+            if (this.item.Stack != int.MaxValue)
+            {
+                discoveredDimensionCount++;
+            }
         }
 
         public virtual int CurrentStage()
@@ -49,9 +60,31 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
             return stage;
         }
 
-        public virtual bool HintAllowed()
+        /// <summary>Default implementation of whether or not a dimension can be hinted.</summary>
+        /// <seealso cref="IDimensionImplementation.HintAllowed"/>
+        /// <remarks>
+        /// Uses mod config to define what can be hinted.
+        /// <list type="table">
+        /// <item>
+        /// <term>All</term>
+        /// <description>Allows hints for all dimensions (where not otherwise overridden)</description>
+        /// </item>
+        /// <item>
+        /// <term>Daily</term>
+        /// <description>Hints 3 dimensions based on the current number of days played, cycling one out and addint a new hint each day</description>
+        /// </item>
+        /// <item>
+        /// <term>Random</term>
+        /// <description>Hints 0-4 dimensions based on current days played and current number of dimensions unlocked</description>
+        /// </item>
+        /// <item>
+        /// <term>None</term>
+        /// <description>Does not allow hints</description>
+        /// </item>
+        /// </list>
+        /// </remarks>
+        public virtual bool HintAllowed(HintConfig hintConfig)
         {
-            var hintConfig = config.DimensionHints;
             if (hintConfig == HintConfig.All)
             {
                 return true;
@@ -67,7 +100,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
             }
             if (hintConfig == HintConfig.Random)
             {
-                var r = new Random((int)Game1.stats.daysPlayed * unlockedDimensionCount + (int)Game1.uniqueIDForThisGame / 2);
+                var r = new Random((int)Game1.stats.daysPlayed * discoveredDimensionCount + (int)Game1.uniqueIDForThisGame / 2);
                 var count = r.Next(4) + 1;
                 for (var i = 0; i < count; ++i)
                 {
@@ -79,6 +112,8 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
             }
             return false;
         }
+
+        public abstract bool HintAllowed();
 
         public virtual string CurrentDescription()
         {
@@ -121,6 +156,8 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
             if (this.item.Stack == int.MaxValue)
             {
                 this.item.Stack = 0;
+                // We're discovering this dimension, so increment the count
+                discoveredDimensionCount++;
             }
             int remainder;
             if (dimensionInfo.IgnoreQuality && item is Object o && this.item is Object t)
@@ -146,5 +183,9 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
             item.Stack = remainder;
             return item;
         }
+
+        public abstract GameLocation getDimensionLocation();
+
+        public abstract void InitializeDimensionBuilding();
     }
 }

@@ -32,38 +32,31 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 return _mod.Helper;
             }
         }
-        public static IMonitor Monitor
-        {
-            get
-            {
-                return _mod.Monitor;
-            }
-        }
-        public static IManifest ModManifest
-        {
-            get
-            {
-                return _mod.ModManifest;
-            }
-        }
         public static string ModId
         {
             get
             {
-                return ModManifest.UpdateKeys[0].Split(':')[1];
+                return _mod.ModManifest.UpdateKeys[0].Split(':')[1];
             }
         }
 
+        /// <summary>
+        /// Overlays a mod image on top of a vanilla Stardew texture, to allow modification without republishing vanilla assets, getting permission, etc.
+        /// </summary>
         public static Texture2D OverlayModTextureOverVanillaTexture(string modFilename, string vanillaTextureName)
         {
             Texture2D modded = Texture2DToPremultiplied(Helper.Content.Load<Texture2D>(modFilename, ContentSource.ModFolder));
             Texture2D vanilla = Texture2DToPremultiplied(Helper.Content.Load<Texture2D>(vanillaTextureName, ContentSource.GameContent));
-            // TODO Throw an error if the sizes aren't the same
+            if (modded.Bounds != vanilla.Bounds)
+            {
+                throw new InvalidOperationException("Textures to overlay must be the same size.");
+            }
 
             Color[] overlaidData = new Color[vanilla.Width * vanilla.Height];
             vanilla.GetData(overlaidData);
             Color[] moddedData = new Color[modded.Width * modded.Height];
             modded.GetData(moddedData);
+
             for (int i = 0; i < overlaidData.Length; ++i)
             {
                 // Using math from https://en.wikipedia.org/wiki/Alpha_compositing#Straight_versus_premultiplied and vars reference that for brain reasons
@@ -80,6 +73,9 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             return overlaid;
         }
 
+        /// <summary>
+        /// Converts a texture from the raw loaded form to premultiplied form.
+        /// </summary>
         public static Texture2D Texture2DToPremultiplied(Texture2D texture)
         {
             Color[] textureData = new Color[texture.Width * texture.Height];
@@ -93,14 +89,22 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             return premultipliedTexture;
         }
 
+        /// <summary>
+        /// Utility method to log mod operations at a trace level. It's nice to be able to change one place to change the log level for everything.
+        /// </summary>
+        /// <param name="message">The message to log</param>
         public static void TraceLog(string message)
         {
-            Monitor.Log(message, LogLevel.Debug);
+            _mod.Monitor.Log(message, LogLevel.Debug);
         }
 
+        /// <summary>
+        /// Utility method to log mod operations at a debug level. It's nice to be able to change one place to change the log level for everything.
+        /// </summary>
+        /// <param name="message">The message to log</param>
         public static void Log(string message)
         {
-            Monitor.Log(message, LogLevel.Debug);
+            _mod.Monitor.Log(message, LogLevel.Debug);
         }
 
         /// <summary>
@@ -139,12 +143,18 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             }
         }
 
+        /// <summary>
+        /// Short way to get all types for reflection operations.
+        /// </summary>
         internal static IEnumerable<Type> GetAllTypes()
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
         }
 
-        internal static Texture2D getGreyscaledSpriteSheet(Texture2D colored)
+        /// <summary>
+        /// Returns a new <see cref="Texture2D"/> that is the input converted to grayscale.
+        /// </summary>
+        internal static Texture2D getGrayscaledSpriteSheet(Texture2D colored)
         {
             var greyscale = new Texture2D(colored.GraphicsDevice, colored.Width, colored.Height);
             var data = new Color[colored.Width * colored.Height];

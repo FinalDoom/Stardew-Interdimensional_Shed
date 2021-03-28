@@ -6,33 +6,64 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using StardewValley.Buildings;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
+    /// <summary>
+    /// Description of the various immutable parts of a dimension, loaded from JSON.
+    /// Mutable parts should go in an <see cref="IDimensionImplementation"/> that will
+    /// be instantiated once via reflection and added to this object.
+    /// </summary>
     [JsonObject(MemberSerialization.Fields)]
     public class DimensionInfo
     {
 #pragma warning disable 0649 // Fields are just serialized into
 #pragma warning disable IDE0044 // Add readonly modifier (same thing, don't care)
-        private int itemId;
+        /// <summary>
+        /// The item ID (<see cref="StardewValley.Object"/> only at this time) of the item that links to this dimension
+        /// </summary>
         public int ItemId { get => itemId; }
-        private bool ignoreQuality;
+        private int itemId;
+        /// <summary>
+        /// True if this dimension can be funded with items of any quality, false if the same quality item must be provided
+        /// </summary>
         public bool IgnoreQuality { get => ignoreQuality; }
-        private int quality;
+        private bool ignoreQuality;
+        /// <summary>
+        /// The quality expected of the item that links to this dimension. Will be 0 if not specified (normal).
+        /// Quality can also be 1 (silver) 2 (gold) or 4 (iridium).
+        /// </summary>
         public int Quality { get => quality; }
-        private string displayName;
+        private int quality;
+        /// <summary>
+        /// Display name of this dimension. Used as a title in the GUI.
+        /// </summary>
         public string DisplayName { get => displayName; }
-        private string hint;
+        private string displayName;
+        /// <summary>
+        /// Hint text to display for the dimension (if hints are allowed for it).
+        /// </summary>
         public string Hint { get => hint; }
-        private string description1;
+        private string hint;
+        /// <summary>
+        /// First stage/initial discovery description to display for the dimension.
+        /// </summary>
         public string Description1 { get => description1; }
-        private string description2;
+        private string description1;
+        /// <summary>
+        /// Secondary description to display for the dimension, normally at stage 2.
+        /// </summary>
         public string Description2 { get => description2; }
-        private string description3;
+        private string description2;
+        /// <summary>
+        /// Tertiary description to display for the dimension, normally at stage 3.
+        /// </summary>
         public string Description3 { get => description3; }
-        private string buildingId;
-        private string textShadowColor;
-        private float textShadowAlpha;
+        private string description3;
+        /// <summary>
+        /// Color to use for the text shadow. This is used for the shadow of the hint/description in the GUI.
+        /// </summary>
         public Color TextShadowColor {
             get
             {
@@ -42,21 +73,45 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
                 return Game1.textShadowColor;
             }
         }
-        private string dimensionImplementationClass;
+        private string textShadowColor;
+        private float textShadowAlpha;
+        /// <summary>
+        /// Type of the <see cref="IDimensionImplementation"/> that should be used for this dimension's logic.
+        /// </summary>
         public Type DimensionImplementationClass { get => AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(dimensionImplementationClass)).Where(t => t != null).Single(); }
+        private string dimensionImplementationClass;
+        /// <summary>
+        /// The unique descriptive name to use in the <c><see cref="Building"/>.modData</c> to determine a vanilla Building is associated with this dimension.
+        /// </summary>
         public string BuildingId { get => buildingId; }
-        private string mapNameBase;
+        private string buildingId;
+        /// <summary>
+        /// The name of the map to use for this dimension. It may be appended with the current stage to get different maps for each unlock stage.
+        /// </summary>
         public string MapName { get => mapNameBase; }
-        private Dictionary<int, int> stageCounts;
+        private string mapNameBase;
+        /// <summary>
+        /// List of the unlockable stage levels (generally 1-6 or a subset range from 1).
+        /// </summary>
         public List<int> Stages { get => stageCounts.Keys.ToList(); }
+        /// <summary>
+        /// The number of items required to unlock the passed stage
+        /// </summary>
         public int StageRequirement(int stage)
         {
             return stageCounts[stage];
         }
+        private Dictionary<int, int> stageCounts;
+        /// <summary>
+        /// The logic implementation class that will handle the functionality of this dimension. It is set via reflection from the <see cref="DimensionImplementationClass"/>.
+        /// </summary>
+        public IDimensionImplementation DimensionImplementation { get => dimensionImplementation; set => dimensionImplementation = value; }
         [JsonIgnore]
         private IDimensionImplementation dimensionImplementation;
-        public IDimensionImplementation DimensionImplementation { get => dimensionImplementation; set => dimensionImplementation = value; }
 
+        /// <summary>
+        /// Used by Json serialization
+        /// </summary>
         private DimensionInfo() { }
     }
 }

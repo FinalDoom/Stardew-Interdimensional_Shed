@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FinalDoom.StardewValley.InterdimensionalShed.API;
+using StardewModdingAPI.Events;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
@@ -39,7 +40,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             modData = building.modData;
             modData[ModEntry.SaveKey] = "true";
             var item = modData.ContainsKey(ModData_SelectedDimensionItemKey) ? modData[ModData_SelectedDimensionItemKey] : "769";
-            var dimension = item.Equals("none") ? null : ModEntry.DimensionData.getDimensionInfo(Convert.ToInt32(item));
+            var dimension = item.Equals("none") ? null : DimensionData.Data.getDimensionInfo(Convert.ToInt32(item));
             if (dimension != null && !modData.ContainsKey(ModData_SelectedDimensionItemKey))
             {
                 Utility.Log("New " + typeof(InterdimensionalShedBuilding).Name + " dimension set to " + dimension.DisplayName + " dimension");
@@ -72,7 +73,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 }
                 var warpTargetX = tileX.Value + humanDoor.X;
                 var warpTargetY = tileY.Value + humanDoor.Y + 1;
-                ModEntry.DimensionData.doDimensionWarp(selectedDimension, who, new Point(warpTargetX, warpTargetY));
+                DimensionData.Data.doDimensionWarp(selectedDimension, who, new Point(warpTargetX, warpTargetY));
                 // Consider Myst sound here
                 who.currentLocation.playSoundAt("doorClose", tileLocation);
                 return true;
@@ -98,6 +99,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             // Figure out if the item slot needs left click or what
             return base.CanLeftClick(x, y);
         }
+
         public override bool leftClicked()
         {
             return base.leftClicked();
@@ -107,60 +109,93 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         {
             // Can probably do like, use pickaxe to get item out -- but check if anyone's inside and pop up a message if there is.. or not? might not be necessary if the door warp still leads to the farm
         }
-        internal class InterdimensionalShedBuildingSaveHandler : IConvertingSaveHandler<Building>
+
+        internal class InterdimensionalShedBuildingSaveHandler : IConvertingSaveHandler
         {
+            private readonly List<InterdimensionalShedBuilding> customBuildings = new List<InterdimensionalShedBuilding>();
+            private readonly List<Building> vanillaBuildings = new List<Building>();
+
             /// <summary>
             /// Converts <c>InterdimensionalShedBuilding</c>s to normal <c>Building</c>s so they can be saved.
             /// </summary>
-            /// <returns>An enumeration of the converted <c>Building</c>s to pass back in for reconversion</returns>
-            public IEnumerable<Building> PrepareForSaving()
+            public void PrepareForSaving()
             {
-                var farm = Game1.getFarm();
-                return farm.buildings.OfType<InterdimensionalShedBuilding>().ToList().Select(building =>
+                var farmBuildings = Game1.getFarm().buildings;
+                farmBuildings.OfType<InterdimensionalShedBuilding>().ToList().ForEach(building =>
                 {
                     var baseBuilding = new Building(new BluePrint(new BluePrint(building.buildingType.Value).nameOfBuildingToUpgrade), new Vector2(building.tileX.Value, building.tileY.Value));
                     baseBuilding.modData = building.modData;
                     baseBuilding.daysOfConstructionLeft.Value = 0;
                     baseBuilding.indoors.Value = building.indoors.Value;
-                    farm.buildings.Remove(building);
-                    farm.buildings.Add(baseBuilding);
-                    return baseBuilding;
-                }).ToList();
-            }
-
-            IEnumerable<object> ISaveHandler.PrepareForSaving()
-            {
-                return PrepareForSaving();
+                    farmBuildings.Remove(building);
+                    farmBuildings.Add(baseBuilding);
+                    customBuildings.Add(building);
+                    vanillaBuildings.Add(baseBuilding);
+                });
             }
 
             /// <summary>
             /// Converts base <c>Building</c>s back into <c>InterdimensionalShedBuilding</c>s after saving.
             /// </summary>
-            /// <param name="buildings">Base buildings to be converted</param>
-            /// <returns>An enumeration of the newly reconverted buildings</returns>
-            public void AfterSaved(IEnumerable<Building> buildings)
+            public void AfterSaved()
             {
-                var farm = Game1.getFarm();
-                foreach (var building in buildings)
-                {
-                    var idsb = new InterdimensionalShedBuilding(building);
-                    farm.buildings.Remove(building);
-                    farm.buildings.Add(idsb);
-                }
-            }
-
-            public void AfterSaved(IEnumerable<object> obj)
-            {
-                AfterSaved((IEnumerable<Building>)obj);
+                var farmBuildings = Game1.getFarm().buildings;
+                vanillaBuildings.ForEach(building => farmBuildings.Remove(building));
+                vanillaBuildings.Clear();
+                customBuildings.ForEach(building => farmBuildings.Add(building));
+                customBuildings.Clear();
             }
 
             /// <summary>
             /// Upconvert buildings to the appropriate type after load.
             /// </summary>
-            /// <returns>An enumeration of the upconveted buildings</returns>
             public void InitializeAfterLoad()
             {
-                AfterSaved(Game1.getFarm().buildings.Where(building => building.modData.ContainsKey(ModEntry.SaveKey)).ToList());
+                // The vanilla saved versions of our custom buildings
+                vanillaBuildings.AddRange(Game1.getFarm().buildings.Where(building => building.modData.ContainsKey(ModEntry.SaveKey)));
+                // Change the vanilla into custom versions
+                customBuildings.AddRange(vanillaBuildings.Select(building => new InterdimensionalShedBuilding(building)));
+                AfterSaved();
+            }
+        }
+    }
+
+    internal class InterdimensionalShedBuildingBluePrintProvider : ICustomBluePrintProvider
+    {
+        public bool IsMagical => true;
+
+        public BluePrint BluePrint => new BluePrint(ModEntry.BlueprintId);
+
+        /// <summary>
+        /// Converts a just-upgraded Big Shed into an InterdimensionalShed
+        /// </summary>
+        public void InterceptBuildAction(object sender, UpdateTickedEventArgs e)
+        {
+            var currentMenu = Game1.activeClickableMenu;
+            if (currentMenu == null || currentMenu is not CarpenterMenu)
+            {
+                Utility.Helper.Events.GameLoop.UpdateTicked -= InterceptBuildAction;
+            }
+            else if (currentMenu is CarpenterMenu carpenterMenu && Utility.Helper.Reflection.GetField<bool>(carpenterMenu, "upgrading").GetValue() && Utility.Helper.Reflection.GetField<bool>(carpenterMenu, "freeze").GetValue())
+            {
+                var farm = Game1.getFarm();
+                var toUpgrade = (from building in farm.buildings
+                                 where building.daysUntilUpgrade.Value > 0 && building.buildingType.Equals(carpenterMenu.CurrentBlueprint.nameOfBuildingToUpgrade)
+                                 select building)
+                                 .FirstOrDefault();
+                if (toUpgrade != null)
+                {
+                    // Do the upgrade immediately then swap for our type
+                    toUpgrade.buildingType.Value = ModEntry.BlueprintId;
+                    toUpgrade.resetTexture();
+                    var idsb = new InterdimensionalShedBuilding(toUpgrade);
+                    farm.buildings.Remove(toUpgrade);
+                    farm.buildings.Add(idsb);
+
+                    idsb.SelectedDimension.DimensionImplementation.InitializeDimensionBuilding();
+
+                    Utility.Helper.Events.GameLoop.UpdateTicked -= InterceptBuildAction;
+                }
             }
         }
     }

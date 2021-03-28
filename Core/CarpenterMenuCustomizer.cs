@@ -13,50 +13,39 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     internal class CarpenterMenuCustomizer
     {
-        internal CarpenterMenuCustomizer()
+        private readonly List<ICustomBluePrintProvider> bluePrintProviders = (
+            from type in Utility.GetAllTypes()
+            where !type.IsInterface && !type.IsAbstract && type.GetInterfaces().Any(i => i.IsAssignableFrom(typeof(ICustomBluePrintProvider)))
+            select (ICustomBluePrintProvider)Activator.CreateInstance(type)
+            ).ToList();
+        private readonly IModHelper helper;
+
+        internal CarpenterMenuCustomizer(IModHelper helper)
         {
-            Utility.Helper.Events.Display.MenuChanged += OnMenuChanged;
+            this.helper = helper;
+            helper.Events.Display.MenuChanged += OnMenuChanged;
         }
 
+        /// <summary>
+        /// Adds a custom <see cref="BluePrint"/> to the Wizard's or Robin's <see cref="CarpenterMenu"/>.
+        /// </summary>
+        /// <remarks>
+        /// We just operate with a single <see cref="InterdimensionalShedBuilding"/> and its <see cref="BluePrint"/>,
+        /// provided by an ICustomBluePrintProvider but this should be generalizable for any other buildings for custom tilesets or behavior.
+        /// </remarks>
         private void OnMenuChanged(object sender, MenuChangedEventArgs e)
         {
-            if (e.NewMenu is CarpenterMenu menu && Utility.Helper.Reflection.GetField<bool>(menu, "magicalConstruction").GetValue())
+            if (e.NewMenu is CarpenterMenu menu) 
             {
-                Utility.TraceLog("Adding blueprint to Wizard Book CarpenterMenu");
-                Utility.Helper.Reflection.GetField<List<BluePrint>>(menu, "blueprints").GetValue().Add(new BluePrint(ModEntry.BlueprintId));
-                Utility.Helper.Events.GameLoop.UpdateTicked += GameLoop_UpdateTicked_InterceptBuildingUpgrade;
-            }
-
-        }
-
-        private void GameLoop_UpdateTicked_InterceptBuildingUpgrade(object sender, UpdateTickedEventArgs e)
-        {
-            var currentMenu = Game1.activeClickableMenu;
-            if (currentMenu == null || currentMenu is not CarpenterMenu)
-            {
-                Utility.Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked_InterceptBuildingUpgrade;
-            }
-            else if (currentMenu is CarpenterMenu carpenterMenu && Utility.Helper.Reflection.GetField<bool>(carpenterMenu, "upgrading").GetValue() && Utility.Helper.Reflection.GetField<bool>(carpenterMenu, "freeze").GetValue())
-            {
-                var farm = Game1.getFarm();
-                var toUpgrade = (from building in farm.buildings
-                                 where building.daysUntilUpgrade.Value > 0 && building.buildingType.Equals(carpenterMenu.CurrentBlueprint.nameOfBuildingToUpgrade)
-                                 select building)
-                                 .FirstOrDefault();
-                if (toUpgrade != null)
+                var isMagical = helper.Reflection.GetField<bool>(menu, "magicalConstruction").GetValue();
+                foreach (var provider in bluePrintProviders.Where(p => p.IsMagical == isMagical))
                 {
-                    // Do the upgrade immediately then swap for our type
-                    toUpgrade.buildingType.Value = ModEntry.BlueprintId;
-                    toUpgrade.resetTexture();
-                    var idsb = new InterdimensionalShedBuilding(toUpgrade);
-                    farm.buildings.Remove(toUpgrade);
-                    farm.buildings.Add(idsb);
-
-                    ModEntry.DimensionData.InitializeDimensionBuilding(idsb.SelectedDimension);
-
-                    Utility.Helper.Events.GameLoop.UpdateTicked -= GameLoop_UpdateTicked_InterceptBuildingUpgrade;
+                    Utility.TraceLog($"Adding blueprint to {(isMagical ? "Wizard Book" : "Robin's")} CarpenterMenu");
+                    helper.Reflection.GetField<List<BluePrint>>(menu, "blueprints").GetValue().Add(provider.BluePrint);
+                    helper.Events.GameLoop.UpdateTicked += provider.InterceptBuildAction;
                 }
             }
+
         }
     }
 }

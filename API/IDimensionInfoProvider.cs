@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
+    /// <summary>
+    /// Objects of this type will be called via reflection to get the list of <see cref="DimensionInfo"/> provided by a mod.
+    /// </summary>
     public interface IDimensionInfoProvider
     {
         /// <summary>
@@ -21,7 +24,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
         /// for your extension dimensions.
         /// 
         /// <c>
-        /// return Utility.Helper.Content.Load<List<DimensionInfo>>("assets/Dimensions.json", ContentSource.ModFolder));
+        /// return Helper.Content.Load<List<DimensionInfo>>("assets/Dimensions.json", ContentSource.ModFolder));
         /// </c>
         /// </example>
         public IEnumerable<DimensionInfo> Dimensions { get; }

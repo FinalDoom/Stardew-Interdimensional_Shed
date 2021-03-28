@@ -12,14 +12,14 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     public class DimensionBuilding : Building
     {
-        private DimensionInfo dimensionInfo;
+        private readonly DimensionInfo dimensionInfo;
         public bool IsAccessible { get => dimensionInfo.DimensionImplementation.Item.Stack != int.MaxValue && dimensionInfo.DimensionImplementation.Item.Stack > 0; }
 
         private DimensionBuilding(Building building) : base(new BluePrint(building.buildingType.Value), new Vector2(building.tileX.Value, building.tileY.Value))
         {
             daysOfConstructionLeft.Value = 0;
             modData = building.modData;
-            dimensionInfo = ModEntry.DimensionData.getDimensionInfo(modData[DimensionData.ModData_ShedDimensionKey]);
+            dimensionInfo = DimensionData.Data.getDimensionInfo(modData[DimensionData.ModData_ShedDimensionKey]);
             indoors.Value = getIndoors(dimensionInfo.MapName);
             Utility.TransferObjects(building.indoors.Value, indoors.Value);
         }
@@ -33,7 +33,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             indoors.Value = getIndoors(dimensionInfo.MapName);// Still a problem with dimensions post-convert
         }
 
-        internal bool ContainsDimension(DimensionInfo info)
+        public bool ContainsDimension(DimensionInfo info)
         {
             return dimensionInfo == info;
         }
@@ -60,17 +60,20 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 base.dayUpdate(dayOfMonth);
             }
         }
-        internal class DimensionBuildingSaveHandler : IConvertingSaveHandler<Building>
-        {
-            private List<Building> unloadedDimensionBuildings;
 
-            public IEnumerable<Building> PrepareForSaving()
+        internal class DimensionBuildingSaveHandler : IConvertingSaveHandler
+        {
+            private readonly List<DimensionBuilding> customBuildings = new List<DimensionBuilding>();
+            private readonly List<Building> vanillaBuildings = new List<Building>();
+            private readonly List<Building> unloadedDimensionBuildings = new List<Building>();
+
+            public void PrepareForSaving()
             {
                 var farmBuildings = Game1.getFarm().buildings;
                 // Return the unloaded buildings to the pool to be saved
                 unloadedDimensionBuildings.ForEach(b => farmBuildings.Add(b));
                 // Downconvert our buildings to a savable type
-                var savable = farmBuildings.OfType<DimensionBuilding>().ToList().Select(building =>
+                farmBuildings.OfType<DimensionBuilding>().ToList().ForEach(building =>
                 {
                     var baseBuilding = new Building(new BluePrint(building.buildingType.Value), new Vector2(building.tileX.Value, building.tileY.Value));
                     baseBuilding.modData = building.modData;
@@ -82,46 +85,36 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                     Utility.TraceLog($"Base interior has {baseBuilding.indoors.Value.furniture.Count()} objects");
                     farmBuildings.Remove(building);
                     farmBuildings.Add(baseBuilding);
-                    return baseBuilding;
-                }).ToList();
-                return savable;
+                    customBuildings.Add(building);
+                    vanillaBuildings.Add(baseBuilding);
+                });
             }
 
-            IEnumerable<object> ISaveHandler.PrepareForSaving()
-            {
-                return PrepareForSaving();
-            }
-
-            public void AfterSaved(IEnumerable<Building> buildings)
+            public void AfterSaved()
             {
                 var farmBuildings = Game1.getFarm().buildings;
                 // Remove the unloaded buildings again
                 unloadedDimensionBuildings.ForEach(b => farmBuildings.Remove(b));
-                // Upconvert the loaded buildings back to our type
-                foreach (var building in buildings)
-                {
-                    var db = new DimensionBuilding(building);
-                    farmBuildings.Remove(building);
-                    farmBuildings.Add(db);
-                }
-            }
-
-            public void AfterSaved(IEnumerable<object> obj)
-            {
-                AfterSaved((IEnumerable<Building>)obj);
+                // Add our custom types back into the pool
+                vanillaBuildings.ForEach(building => farmBuildings.Remove(building));
+                vanillaBuildings.Clear();
+                customBuildings.ForEach(building => farmBuildings.Add(building));
+                customBuildings.Clear();
             }
 
             public void InitializeAfterLoad()
             {
                 var farmBuildings = Game1.getFarm().buildings;
                 // Take any buildings for which mods have been unloaded out of the pool
-                unloadedDimensionBuildings = farmBuildings.Where(building => building.modData.ContainsKey(DimensionData.ModData_ShedDimensionKey) && ModEntry.DimensionData.getDimensionInfo(building.modData[DimensionData.ModData_ShedDimensionKey]) == null).ToList();
+                unloadedDimensionBuildings.AddRange(farmBuildings.Where(building => building.modData.ContainsKey(DimensionData.ModData_ShedDimensionKey) && DimensionData.Data.getDimensionInfo(building.modData[DimensionData.ModData_ShedDimensionKey]) == null));
                 if (unloadedDimensionBuildings.Count() > 0)
                 {
                     Utility.Log($"Hiding buildings which are missing mod data: {string.Join(", ", unloadedDimensionBuildings.Select(b => b.modData[DimensionData.ModData_ShedDimensionKey]))}");
-                    unloadedDimensionBuildings.ForEach(b => farmBuildings.Remove(b));
                 }
-                AfterSaved(farmBuildings.Where(building => building.modData.ContainsKey(DimensionData.ModData_ShedDimensionKey)).ToList());
+                // The vanilla saved versions of our custom buildings
+                vanillaBuildings.AddRange(Game1.getFarm().buildings.Where(building => building.modData.ContainsKey(DimensionData.ModData_ShedDimensionKey)));
+                // Change the vanilla into custom versions
+                customBuildings.AddRange(vanillaBuildings.Select(building => new DimensionBuilding(building)));
             }
         }
     }

@@ -18,22 +18,19 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     internal partial class ModEntry : Mod, IAssetLoader, IAssetEditor
     {
-        private static DimensionData dimensionData;
-        internal static DimensionData DimensionData { get => dimensionData; }
-
         internal static ModConfig config;
         internal static Texture2D myMenuTexture;
         internal static Texture2D myMenuTextureUncolored;
 
         public override void Entry(IModHelper helper)
         {
-            myMenuTexture = Helper.Content.Load<Texture2D >("assets/MenuTiles.png", ContentSource.ModFolder);
-            myMenuTextureUncolored = Helper.Content.Load<Texture2D>("assets/MenuTilesUncolored.png", ContentSource.ModFolder);
             Utility.Mod = this;
 
-            dimensionData = new DimensionData();
+            myMenuTexture = Helper.Content.Load<Texture2D >("assets/MenuTiles.png", ContentSource.ModFolder);
+            myMenuTextureUncolored = Helper.Content.Load<Texture2D>("assets/MenuTilesUncolored.png", ContentSource.ModFolder);
+
             new SaveManager();
-            new CarpenterMenuCustomizer();
+            new CarpenterMenuCustomizer(helper);
             config = Helper.ReadConfig<ModConfig>();
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed_DebugHelp;
         }
@@ -44,6 +41,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         KeybindList slot = KeybindList.Parse("LeftControl + LeftAlt + s");
         KeybindList home = KeybindList.Parse("LeftControl + LeftAlt + d");
         KeybindList localInfoFix = KeybindList.Parse("LeftControl + LeftAlt + i");
+        KeybindList mayo = KeybindList.Parse("LeftControl + LeftAlt + m");
         private void Input_ButtonPressed_DebugHelp(object sender, ButtonPressedEventArgs e)
         {
             if (cheats.JustPressed())
@@ -69,6 +67,11 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             else if (localInfoFix.JustPressed())
             {
                 LocalInfo();
+            }
+            else if (mayo.JustPressed())
+            {
+                Helper.ConsoleCommands.Trigger("player_add", new string[]{
+                    "name", "mayonnaise", "69", "4"});
             }
         }
 
