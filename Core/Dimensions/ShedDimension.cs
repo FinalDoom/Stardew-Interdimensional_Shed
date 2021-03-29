@@ -3,13 +3,13 @@ using StardewValley;
 using StardewValley.Buildings;
 using System.Collections.Generic;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed
+namespace FinalDoom.StardewValley.InterdimensionalShed.Dimensions
 {
     internal class ShedDimension : Shed
     {
         public ShedDimension(string m, string name) : base(m, name)
         {
-		}
+        }
 
         public override List<Rectangle> getWalls()
         {

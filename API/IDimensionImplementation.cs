@@ -9,10 +9,29 @@ using System.Threading.Tasks;
 namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
     /// <summary>
+    /// Event arguments for <see cref="IDimensionImplementation.StageChanged"/>
+    /// </summary>
+    public class DimensionStageChangedArgs
+    {
+        public int OldStage { get; }
+        public int NewStage { get; }
+        public DimensionStageChangedArgs(int oldStage, int newStage)
+        {
+            OldStage = oldStage;
+            NewStage = newStage;
+        }
+    }
+    public delegate void StageChangedEventHandler(object sender, DimensionStageChangedArgs e);
+
+    /// <summary>
     /// Defines the dynamic logic for a dimension.
     /// </summary>
     public interface IDimensionImplementation
     {
+        /// <summary>
+        /// Event that will be fired when the dimension stage is changed. Useful for buildings to self-update.
+        /// </summary>
+        public event StageChangedEventHandler StageChanged;
         /// <summary>
         /// The current size stage the dimension item enables.
         /// </summary>

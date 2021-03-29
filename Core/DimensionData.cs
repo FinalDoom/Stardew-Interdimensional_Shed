@@ -11,6 +11,7 @@ using StardewValley.Buildings;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using FinalDoom.StardewValley.InterdimensionalShed.API;
+using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
@@ -182,7 +183,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 var item = SDVUtility.getItemFromStandardTextDescription("O " + info.ItemId + " 0", null);
                 item.Stack = unlocked ? itemKVPs[info.ItemId] : item.ParentSheetIndex == ItemId_VoidEssence ? voidEssenceCount : int.MaxValue;
                 itemKVPs.Remove(info.ItemId);
-                if (!info.IgnoreQuality && item is Object i)
+                if (info.Quality > -1 && item is Object i)
                 {
                     i.Quality = info.Quality;
                 }

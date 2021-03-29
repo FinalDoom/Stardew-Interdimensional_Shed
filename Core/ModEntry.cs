@@ -13,6 +13,7 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
+using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
@@ -108,10 +109,23 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
          ** Asset Loading and Editing Functions
          *********/
 
+        private static List<string> addedMaps = new List<string>()
+        {
+            "VoidShed1",
+            "DimensionShed1",
+            "DimensionShed2",
+            "DimensionShed3",
+            "DimensionShed4",
+            "DimensionShed5",
+            "DimensionShed6"
+        };
+
         public bool CanLoad<T>(IAssetInfo asset)
         {
             return asset.AssetNameEquals($"Buildings/{BlueprintId}") || asset.AssetNameEquals($"Buildings/{BlueprintId}_PaintMask")
-                || asset.AssetNameEquals($"Data/Events/{BlueprintId}") || asset.AssetNameEquals($"Maps/{BlueprintId}");
+                || asset.AssetNameEquals($"Data/Events/{BlueprintId}") ||
+                addedMaps.Where(name => asset.AssetNameEquals($"Maps/{name}")).Any();
+
         }
 
         public T Load<T>(IAssetInfo asset)
@@ -129,11 +143,11 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             {
                 return (T)(object)InterdimensionalShedEventsData;
             }
-            else if (asset.AssetNameEquals($"Maps/{BlueprintId}"))
+            var addedMap = addedMaps.Where(name => asset.AssetNameEquals($"Maps/{name}")).SingleOrDefault();
+            if (addedMap != null)
             {
-                return Helper.Content.Load<T>("assets/VoidShed.tmx", ContentSource.ModFolder);
+                return Helper.Content.Load<T>($"assets/{addedMap}.tmx", ContentSource.ModFolder);
             }
-
             throw new InvalidOperationException($"Unexpected asset '{asset.AssetName}'.");
         }
 
@@ -150,7 +164,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 var editor = asset.AsDictionary<string, string>();
                 editor.Data[BlueprintId] = getItemCost() + 
                     // Footprint, door loc, animal door loc, mapToWarpTo, name, desc, type, upgradeFrom, tilesize, maxOccupants, action (eg MineElevator, how we do this?), BuildableLocation, cost, magical
-                    $"/7/3/3/2/-1/-1/{BlueprintId}/Mysterious Shed/Connects your shed with the void. The interior can be decorated and is changed by setting items./Upgrades/Big Shed/96/96/20/null/Farm/{config.GoldCost}/true";
+                    $"/7/3/3/2/-1/-1/VoidShed1/Mysterious Shed/Connects your shed with the void. The interior can be decorated and is changed by setting items./Upgrades/Big Shed/96/96/20/null/Farm/{config.GoldCost}/true";
             }
             else if (asset.AssetNameEquals("Data/Events/Farm"))
             {

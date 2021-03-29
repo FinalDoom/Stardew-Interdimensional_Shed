@@ -7,20 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FinalDoom.StardewValley.InterdimensionalShed.API;
+using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     public class DimensionBuilding : Building
     {
         private readonly DimensionInfo dimensionInfo;
-        public bool IsAccessible { get => dimensionInfo.DimensionImplementation.Item.Stack != int.MaxValue && dimensionInfo.DimensionImplementation.Item.Stack > 0; }
 
-        private DimensionBuilding(Building building) : base(new BluePrint(building.buildingType.Value), new Vector2(building.tileX.Value, building.tileY.Value))
+        private DimensionBuilding(DimensionInfo info, Building building) : base(new BluePrint(building.buildingType.Value), new Vector2(building.tileX.Value, building.tileY.Value))
         {
             daysOfConstructionLeft.Value = 0;
             modData = building.modData;
-            dimensionInfo = DimensionData.Data.getDimensionInfo(modData[DimensionData.ModData_ShedDimensionKey]);
-            indoors.Value = getIndoors(dimensionInfo.MapName);
+            dimensionInfo = info;
+            indoors.Value = getIndoors(dimensionInfo.DisplayName);
             Utility.TransferObjects(building.indoors.Value, indoors.Value);
         }
 
@@ -30,7 +30,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             Utility.TraceLog($"Built dimension: {info.DisplayName}");
             daysOfConstructionLeft.Value = 0;
             dimensionInfo = info;
-            indoors.Value = getIndoors(dimensionInfo.MapName);// Still a problem with dimensions post-convert
+            indoors.Value = getIndoors(dimensionInfo.MapName);// Still a problem with dimensions post-convert TODO what did this mean? sigh
         }
 
         public bool ContainsDimension(DimensionInfo info)
@@ -44,21 +44,12 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             {
                 return null;
             }
-            var lcl_indoors = new ShedDimension("Maps\\" + nameOfIndoorsWithoutUnique, buildingType);
+            var lcl_indoors = (GameLocation)Activator.CreateInstance(dimensionInfo.DimensionIndoorsClass, dimensionInfo);
             lcl_indoors.uniqueName.Value = nameOfIndoorsWithoutUnique + Guid.NewGuid().ToString();
             lcl_indoors.IsFarm = true;
             lcl_indoors.isStructure.Value = true;
             updateInteriorWarps(lcl_indoors);
             return lcl_indoors;
-        }
-
-        public override void dayUpdate(int dayOfMonth)
-        {
-            // Don't do any updates to objects and whatever if the linking items are missing
-            if (IsAccessible)
-            {
-                base.dayUpdate(dayOfMonth);
-            }
         }
 
         internal class DimensionBuildingSaveHandler : IConvertingSaveHandler
@@ -114,7 +105,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 // The vanilla saved versions of our custom buildings
                 vanillaBuildings.AddRange(Game1.getFarm().buildings.Where(building => building.modData.ContainsKey(DimensionData.ModData_ShedDimensionKey)));
                 // Change the vanilla into custom versions
-                customBuildings.AddRange(vanillaBuildings.Select(building => new DimensionBuilding(building)));
+                customBuildings.AddRange(vanillaBuildings.Select(building => new DimensionBuilding(DimensionData.Data.getDimensionInfo(building.modData[DimensionData.ModData_ShedDimensionKey]), building)));
             }
         }
     }

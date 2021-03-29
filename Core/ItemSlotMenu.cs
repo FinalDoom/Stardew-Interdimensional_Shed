@@ -13,6 +13,7 @@ using System.Text;
 using System.Threading.Tasks;
 using StardewValley.BellsAndWhistles;
 using FinalDoom.StardewValley.InterdimensionalShed.API;
+using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 using StardewValley.Tools;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed

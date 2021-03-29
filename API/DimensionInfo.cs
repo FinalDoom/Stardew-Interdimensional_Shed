@@ -26,16 +26,11 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
         public int ItemId { get => itemId; }
         private int itemId;
         /// <summary>
-        /// True if this dimension can be funded with items of any quality, false if the same quality item must be provided
-        /// </summary>
-        public bool IgnoreQuality { get => ignoreQuality; }
-        private bool ignoreQuality;
-        /// <summary>
-        /// The quality expected of the item that links to this dimension. Will be 0 if not specified (normal).
-        /// Quality can also be 1 (silver) 2 (gold) or 4 (iridium).
+        /// The quality expected of the item that links to this dimension. Will be -1 if not specified (ignore).
+        /// Quality can also be 0 (normal) 1 (silver) 2 (gold) or 4 (iridium).
         /// </summary>
         public int Quality { get => quality; }
-        private int quality;
+        private int quality = -1;
         /// <summary>
         /// Display name of this dimension. Used as a title in the GUI.
         /// </summary>
@@ -76,10 +71,15 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
         private string textShadowColor;
         private float textShadowAlpha;
         /// <summary>
-        /// Type of the <see cref="IDimensionImplementation"/> that should be used for this dimension's logic.
+        /// Type of the <see cref="IDimensionImplementation"/> that should be used for this dimension's general logic.
         /// </summary>
-        public Type DimensionImplementationClass { get => AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(dimensionImplementationClass)).Where(t => t != null).Single(); }
+        public Type DimensionImplementationClass { get => Utility.GetType(dimensionImplementationClass); }
         private string dimensionImplementationClass;
+        /// <summary>
+        /// The type of the <see cref="GameLocation"/> that should be used for this dimension's "indoors" logic.
+        /// </summary>
+        public Type DimensionIndoorsClass { get => Utility.GetType(dimensionIndoorsClass); }
+        private string dimensionIndoorsClass;
         /// <summary>
         /// The unique descriptive name to use in the <c><see cref="Building"/>.modData</c> to determine a vanilla Building is associated with this dimension.
         /// </summary>

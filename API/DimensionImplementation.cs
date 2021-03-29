@@ -27,6 +27,8 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
         protected readonly int maxItemsConsumed;
         protected readonly int dimensionIndex;
 
+        public event StageChangedEventHandler StageChanged;
+
         public Item Item { get => item; }
 
         public DimensionImplementation(DimensionInfo info, Item item, int dimensionIndex)
@@ -135,7 +137,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
 
         public virtual bool CanAdd(Item item)
         {
-            if (dimensionInfo.IgnoreQuality && item is Object o && this.item is Object t)
+            if (dimensionInfo.Quality > -1 && item is Object o && this.item is Object t)
             {
                 var actualQuality = o.Quality;
                 o.Quality = t.Quality;
@@ -153,14 +155,15 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
                 return item;
             }
 
-            if (this.item.Stack == int.MaxValue)
+            var initialStage = CurrentStage();
+            if (initialStage == -1)
             {
                 this.item.Stack = 0;
                 // We're discovering this dimension, so increment the count
                 discoveredDimensionCount++;
             }
             int remainder;
-            if (dimensionInfo.IgnoreQuality && item is Object o && this.item is Object t)
+            if (dimensionInfo.Quality == -1 && item is Object o && this.item is Object t)
             {
                 var actualQuality = o.Quality;
                 o.Quality = t.Quality;
@@ -176,11 +179,18 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
                 remainder += this.item.Stack - maxItemsConsumed;
                 this.item.Stack = maxItemsConsumed;
             }
-            if (remainder <= 0)
+            if (remainder > 0)
             {
-                return null;
+                item.Stack = remainder;
             }
-            item.Stack = remainder;
+            else
+            {
+                item = null;
+            }
+            if (initialStage != CurrentStage())
+            {
+                StageChanged?.Invoke(this, new DimensionStageChangedArgs(initialStage, CurrentStage()));
+            }
             return item;
         }
 

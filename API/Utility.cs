@@ -2,19 +2,20 @@
 using Microsoft.Xna.Framework.Graphics;
 using StardewModdingAPI;
 using StardewValley;
-using SDVUtility = StardewValley.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SDVUtility = StardewValley.Utility;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed
+namespace FinalDoom.StardewValley.InterdimensionalShed.API
 {
-    internal class Utility
+    public class Utility
     {
-        private static Mod _mod;
-        public static Mod Mod {
+        private static IMod _mod;
+        public static IMod Mod
+        {
             get
             {
                 return _mod;
@@ -37,6 +38,30 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             get
             {
                 return _mod.ModManifest.UpdateKeys[0].Split(':')[1];
+            }
+        }
+
+        /// <summary>
+        /// Utility method to log mod operations at a trace level. It's nice to be able to change one place to change the log level for everything.
+        /// </summary>
+        /// <param name="message">The message to log</param>
+        public static void TraceLog(string message)
+        {
+            if (_mod != null)
+            {
+                _mod.Monitor.Log(message, LogLevel.Debug);
+            }
+        }
+
+        /// <summary>
+        /// Utility method to log mod operations at a debug level. It's nice to be able to change one place to change the log level for everything.
+        /// </summary>
+        /// <param name="message">The message to log</param>
+        public static void Log(string message)
+        {
+            if (_mod != null)
+            {
+                _mod.Monitor.Log(message, LogLevel.Debug);
             }
         }
 
@@ -90,26 +115,28 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         }
 
         /// <summary>
-        /// Utility method to log mod operations at a trace level. It's nice to be able to change one place to change the log level for everything.
+        /// Returns a new <see cref="Texture2D"/> that is the input converted to grayscale.
         /// </summary>
-        /// <param name="message">The message to log</param>
-        public static void TraceLog(string message)
+        public static Texture2D getGrayscaledSpriteSheet(Texture2D colored)
         {
-            _mod.Monitor.Log(message, LogLevel.Debug);
-        }
-
-        /// <summary>
-        /// Utility method to log mod operations at a debug level. It's nice to be able to change one place to change the log level for everything.
-        /// </summary>
-        /// <param name="message">The message to log</param>
-        public static void Log(string message)
-        {
-            _mod.Monitor.Log(message, LogLevel.Debug);
+            var greyscale = new Texture2D(colored.GraphicsDevice, colored.Width, colored.Height);
+            var data = new Color[colored.Width * colored.Height];
+            colored.GetData(data);
+            for (var i = 0; i < data.Length; ++i)
+            {
+                var vals = data[i].ToVector4();
+                var q = (vals.X + vals.Y + vals.Z) / 3;
+                q /= vals.W; // optional - undo alpha premultiplication
+                data[i] = Color.FromNonPremultiplied(new Vector4(q, q, q, vals.W == 0.0f ? vals.W : 0.5f));
+            }
+            greyscale.SetData(data);
+            return greyscale;
         }
 
         /// <summary>
         /// Helper for transferring objects between <c>GameLocation</c>s such as Sheds.
-        /// Beware this is destructive to the <c>to</c> location's contents.
+        /// Beware this is destructive to the <paramref name="destination"/> location's contents.
+        /// This does not remove the objects from the <paramref name="source"/>, merely copies their references.
         /// </summary>
         public static void TransferObjects(GameLocation source, GameLocation destination)
         {
@@ -144,30 +171,19 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         }
 
         /// <summary>
-        /// Short way to get all types for reflection operations.
+        /// Short way to get all types for reflection operations without remembering the specifics.
         /// </summary>
-        internal static IEnumerable<Type> GetAllTypes()
+        public static IEnumerable<Type> GetAllTypes()
         {
             return AppDomain.CurrentDomain.GetAssemblies().SelectMany(a => a.GetTypes());
         }
 
         /// <summary>
-        /// Returns a new <see cref="Texture2D"/> that is the input converted to grayscale.
+        /// Short way to get a specific type by fully qualified name without remembering the specifics.
         /// </summary>
-        internal static Texture2D getGrayscaledSpriteSheet(Texture2D colored)
+        public static Type GetType(string name)
         {
-            var greyscale = new Texture2D(colored.GraphicsDevice, colored.Width, colored.Height);
-            var data = new Color[colored.Width * colored.Height];
-            colored.GetData(data);
-            for (var i = 0; i < data.Length; ++i)
-            {
-                var vals = data[i].ToVector4();
-                var q = (vals.X + vals.Y + vals.Z) / 3;
-                q /= vals.W; // optional - undo alpha premultiplication
-                data[i] = Color.FromNonPremultiplied(new Vector4(q, q, q, vals.W == 0.0f ? vals.W : 0.5f));
-            }
-            greyscale.SetData(data);
-            return greyscale;
+            return AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(name)).Where(t => t != null).Single();
         }
     }
 }

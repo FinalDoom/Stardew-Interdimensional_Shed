@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using FinalDoom.StardewValley.InterdimensionalShed.API;
+using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 using StardewModdingAPI.Events;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
