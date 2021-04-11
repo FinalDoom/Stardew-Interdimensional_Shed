@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SDVUtility = StardewValley.Utility;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed.API
+namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     public class Utility
     {
@@ -22,7 +22,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
             }
             set
             {
-                if (_mod == null) _mod = value;
+                _mod ??= value;
             }
         }
 
@@ -47,10 +47,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
         /// <param name="message">The message to log</param>
         public static void TraceLog(string message)
         {
-            if (_mod != null)
-            {
-                _mod.Monitor.Log(message, LogLevel.Debug);
-            }
+            _mod?.Monitor.Log(message, LogLevel.Debug);
         }
 
         /// <summary>
@@ -59,10 +56,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
         /// <param name="message">The message to log</param>
         public static void Log(string message)
         {
-            if (_mod != null)
-            {
-                _mod.Monitor.Log(message, LogLevel.Debug);
-            }
+            _mod?.Monitor.Log(message, LogLevel.Debug);
         }
 
         /// <summary>
@@ -184,6 +178,43 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
         public static Type GetType(string name)
         {
             return AppDomain.CurrentDomain.GetAssemblies().Select(a => a.GetType(name)).Where(t => t != null).Single();
+        }
+
+
+        private static Random random;
+        public static double RandomGaussian()
+        {
+            return RandomGaussian(random ??= new Random((int)(Game1.uniqueIDForThisGame / 4)));
+        }
+
+        public static double RandomGaussian(double mean, double stdDev)
+        {
+            return RandomGaussian(random ??= new Random((int)(Game1.uniqueIDForThisGame / 4)), mean, stdDev);
+        }
+
+        public static double RandomGaussian(Random r, double mean = 0.5f, double stdDev = 0.5f / 3)
+        {
+            double u1 = 1.0 - r.NextDouble(); //uniform(0,1] random doubles
+            double u2 = 1.0 - r.NextDouble();
+            double randStdNormal = Math.Sqrt(-2.0 * Math.Log(u1)) *
+                         Math.Sin(2.0 * Math.PI * u2); //random normal(0,1)
+            double randNormal =
+                         mean + stdDev * randStdNormal; //random normal(mean,stdDev^2)
+            return randNormal;
+        }
+    }
+    public static class Vector2Ext
+    {
+        public static Point ToPoint(this Vector2 vector2)
+        {
+            return new Point(Convert.ToInt32(vector2.X), Convert.ToInt32(vector2.Y));
+        }
+    }
+    public static class PointExt
+    {
+        public static Vector2 ToVector2(this Point point)
+        {
+            return new Vector2(point.X, point.Y);
         }
     }
 }

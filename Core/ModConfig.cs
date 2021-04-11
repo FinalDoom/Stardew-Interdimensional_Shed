@@ -2,7 +2,6 @@
 using StardewModdingAPI;
 using StardewModdingAPI.Utilities;
 using System.Collections.Generic;
-using FinalDoom.StardewValley.InterdimensionalShed.API;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {

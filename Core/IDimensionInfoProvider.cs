@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed.API
+namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     /// <summary>
     /// Objects of this type will be called via reflection to get the list of <see cref="DimensionInfo"/> provided by a mod.

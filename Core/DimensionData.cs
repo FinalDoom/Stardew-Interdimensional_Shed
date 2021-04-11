@@ -11,7 +11,6 @@ using StardewValley.Buildings;
 using Microsoft.Xna.Framework;
 using StardewModdingAPI;
 using FinalDoom.StardewValley.InterdimensionalShed.API;
-using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
@@ -21,25 +20,9 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         private const int ItemId_VoidEssence = 769;
         private const int voidEssenceCount = 100; // should this be init from config, but then how to resolve config changes?
         private const string ModData_DimensionItemsKey = "InterdimensionalShedItems";
-        internal const string ModData_ShedDimensionKey = "InterdimensionalShedLinkedDimensionName";
-
-        private static DimensionData instance;
-        public static DimensionData Data
-        {
-            get => instance;
-            set
-            {
-                if (instance != null)
-                {
-                    throw new InvalidOperationException("DimensionData should only be instantiated once.");
-                }
-                instance = value;
-            }
-        }
 
         public DimensionData()
         {
-            Data = this;
         }
 
         private readonly List<DimensionInfo> dimensionInfo = new List<DimensionInfo>();
@@ -102,7 +85,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         {
             Utility.Log("Doing dimension warp to " + info.DisplayName);
             var lcl_indoors = info.DimensionImplementation.getDimensionLocation();
-            Utility.TraceLog("Got indoors " + (lcl_indoors == null ? "null" : lcl_indoors.NameOrUniqueName));
+            Utility.TraceLog("Got indoors " + (lcl_indoors?.NameOrUniqueName ?? "null"));
             var warp = lcl_indoors.warps[0];
             warp.TargetX = warpTarget.X;
             warp.TargetY = warpTarget.Y;
@@ -142,7 +125,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         {
             // Initialize all DimensionInfo
             Utility.TraceLog($"Loading dimensions: Interdimensional Shed (Default)");
-            Data.dimensionInfo.AddRange(Utility.Helper.Content.Load<List<DimensionInfo>>("assets/Dimensions.json", ContentSource.ModFolder));
+            dimensionInfo.AddRange(Utility.Helper.Content.Load<List<DimensionInfo>>("assets/Dimensions.json", ContentSource.ModFolder));
             var dimensionInfoProviders =
                 from type in Utility.GetAllTypes()
                 where !type.IsInterface && !type.IsAbstract && type.GetInterfaces().Any(i => i.IsAssignableFrom(typeof(IDimensionInfoProvider)))
@@ -150,7 +133,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             foreach (var dip in dimensionInfoProviders)
             {
                 Utility.Log($"Loading dimensions: {dip.DimensionCollectionName}");
-                Data.dimensionInfo.AddRange(dip.Dimensions);
+                dimensionInfo.AddRange(dip.Dimensions);
             }
         }
 
@@ -177,7 +160,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 }
             }
             DimensionImplementation.resetDimensionCounts();
-            Data.dimensionInfo.ForEach(info =>
+            dimensionInfo.ForEach(info =>
             {
                 var unlocked = itemKVPs.ContainsKey(info.ItemId);
                 var item = SDVUtility.getItemFromStandardTextDescription("O " + info.ItemId + " 0", null);
@@ -188,7 +171,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                     i.Quality = info.Quality;
                 }
                 //Utility.TraceLog($"Initializing dimension: {info.DisplayName} type: {info.DimensionImplementationClass}");
-                info.DimensionImplementation = (IDimensionImplementation)Activator.CreateInstance(info.DimensionImplementationClass, info, item, Data.dimensionInfo.IndexOf(info));
+                info.DimensionImplementation = (IDimensionImplementation)Activator.CreateInstance(info.DimensionImplementationClass, info, item, dimensionInfo.IndexOf(info));
             });
             // Store any remainder items for mods that have been unloaded
             unloadedItemCounts = itemKVPs;
@@ -206,7 +189,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         /// </remarks>
         public void PrepareForSaving()
         {
-            var kvps = Data.DiscoveredDimensions.Select(info => string.Format("{0}={1}", info.DimensionImplementation.Item.ParentSheetIndex, info.DimensionImplementation.Item.Stack));
+            var kvps = DiscoveredDimensions.Select(info => string.Format("{0}={1}", info.DimensionImplementation.Item.ParentSheetIndex, info.DimensionImplementation.Item.Stack));
             // Save our stored unloaded dimension items also
             kvps = kvps.Concat(unloadedItemCounts.Select(pair => string.Format("{0}={1}", pair.Key, pair.Value)));
             Game1.getFarm().modData[ModData_DimensionItemsKey] = string.Join(",", kvps);

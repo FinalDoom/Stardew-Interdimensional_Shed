@@ -12,8 +12,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StardewValley.BellsAndWhistles;
-using FinalDoom.StardewValley.InterdimensionalShed.API;
-using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 using StardewValley.Tools;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
@@ -21,6 +19,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
     internal class ItemSlotMenu : MenuWithInventory
     {
         private const string nodimensionplaceholder = "default";
+        private readonly DimensionData data = Singleton<DimensionData>.Instance;
 
         /*********
         ** Fields
@@ -98,8 +97,8 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             var xPosition = xPositionOnScreen + borderWidth + 8 + 4;
             var yPosition = yPositionOnScreen + borderWidth + 64 + 8;
             var index = 0;
-            var visibleDimensions = DimensionData.Data.DiscoveredDimensions;
-            var hintedDimensions = DimensionData.Data.HintedDimensions;
+            var visibleDimensions = data.DiscoveredDimensions;
+            var hintedDimensions = data.HintedDimensions;
             // Plus 1 for the default dimension
             rows = (int)Math.Ceiling((float)(visibleDimensions.Count() + hintedDimensions.Count() + 1) / itemsPerRow);
             var toSkip = (currentRow) * itemsPerRow;
@@ -126,7 +125,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
                 var item = info.DimensionImplementation.Item;
                 var xOffset = (index % itemsPerRow) * Game1.tileSize;
                 var yOffset = ((index % itemsDisplayable) / itemsPerRow) * (Game1.tileSize + 6);
-                var spritesheet = item.Stack > 0 ? Game1.objectSpriteSheet : greyscaleObjectSpriteSheet;
+                var spritesheet = info.DimensionImplementation.CurrentStage() > 0 ? Game1.objectSpriteSheet : greyscaleObjectSpriteSheet;
                 DimensionButtons.Add(new ClickableTextureComponent(Convert.ToString(item.ParentSheetIndex), new Rectangle(xPosition + xOffset, yPosition + yOffset, Game1.tileSize, Game1.tileSize), "", "", spritesheet, Game1.getSourceRectForStandardTileSheet(spritesheet, item.ParentSheetIndex, 16, 16), Game1.pixelZoom));
                 ++index;
             }
@@ -170,7 +169,9 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         private void HandleButtonClick(string name)
         {
             if (name == null)
+            {
                 return;
+            }
             if (name == nodimensionplaceholder)
             {
                 Utility.TraceLog("Changing dimension to default shed");
@@ -179,7 +180,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             else
             {
                 var itemId = Convert.ToInt32(name);
-                CurrentDimension = DimensionData.Data.getDimensionInfo(itemId);
+                CurrentDimension = data.getDimensionInfo(itemId);
                 Utility.TraceLog($"Changing dimension to {CurrentDimension.DisplayName}");
                 ChangeDimensionSelection(CurrentDimension);
             }
@@ -281,7 +282,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         {
             var newItem = heldItem;
             heldItem = null;
-            var newDimension = DimensionData.Data.UndiscoveredDimensions.Where(info => info.DimensionImplementation.CanAdd(newItem)).SingleOrDefault();
+            var newDimension = data.UndiscoveredDimensions.Where(info => info.DimensionImplementation.CanAdd(newItem)).SingleOrDefault();
             Game1.multipleDialogues(new string[] { "...",
                 newDimension != null ? "The Shed glows for a moment.." : "Nothing seems to have happened"});
             Game1.afterDialogues = delegate
@@ -499,14 +500,8 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
 
         protected void drawDescriptionText(SpriteBatch b, SpriteFont font, string text, Vector2 position, Color? textColor = null, Color? textShadowColor = null, float alpha = 1f)
         {
-            if (textColor == null)
-            {
-                textColor = Game1.textColor;
-            }
-            if (textShadowColor == null)
-            {
-                textShadowColor = Game1.textShadowColor;
-            }
+            textColor ??= Game1.textColor;
+            textShadowColor ??= Game1.textShadowColor;
             b.DrawString(font, text, position + new Vector2(2f, 2f), (Color)textShadowColor * alpha);
             b.DrawString(font, text, position + new Vector2(0f, 2f), (Color)textShadowColor * alpha);
             b.DrawString(font, text, position + new Vector2(2f, 0f), (Color)textShadowColor * alpha);

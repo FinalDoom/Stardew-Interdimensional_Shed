@@ -302,7 +302,7 @@
       "6": 325
     },
     "buildingId": "WinterDimension",
-    "mapNameBase": "Shed2",
+    "mapNameBase": "WinterDimension",
     "displayName": "Winter Dimension",
     "hint": "It's frozen but somehow grows anyway.",
     "description1": "It's cold. What did you expect?",
@@ -310,8 +310,8 @@
     "description3": "There are presents!!",
     "textShadowColor": "DodgerBlue",
     "textShadowAlpha": 0.2,
-    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DefaultDimensionImplementation",
-    "dimensionIndoorsClass": "FinalDoom.StardewValley.InterdimensionalShed.Dimensions.UnimplementedDimension",
+    "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.WinterDimensionImplementation",
+    "dimensionIndoorsClass": "FinalDoom.StardewValley.InterdimensionalShed.Dimensions.WinterDimension",
     "quality": -1
   },
   {
@@ -400,7 +400,7 @@
     "description1": "TODO",
     "description2": "",
     "description3": "",
-    "textShadowColor": "Aqua",
+    "textShadowColor": "Aquamarine",
     "textShadowAlpha": 0.5,
     "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DefaultDimensionImplementation",
     "dimensionIndoorsClass": "FinalDoom.StardewValley.InterdimensionalShed.Dimensions.ShedDimension",
@@ -446,8 +446,8 @@
     "description1": "TODO",
     "description2": "",
     "description3": "",
-    "textShadowColor": "MediumPurple",
-    "textShadowAlpha": 0.4,
+    "textShadowColor": "BlueViolet",
+    "textShadowAlpha": 0.2,
     "dimensionImplementationClass": "FinalDoom.StardewValley.InterdimensionalShed.DefaultDimensionImplementation",
     "dimensionIndoorsClass": "FinalDoom.StardewValley.InterdimensionalShed.Dimensions.ShedDimension",
     "quality": -1

@@ -8,7 +8,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
@@ -19,11 +18,10 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             where !type.IsInterface && !type.IsAbstract && type.GetInterfaces().Any(i => i.IsAssignableFrom(typeof(ICustomBluePrintProvider)))
             select (ICustomBluePrintProvider)Activator.CreateInstance(type)
             ).ToList();
-        private readonly IModHelper helper;
+        private readonly IModHelper helper = Utility.Helper;
 
-        internal CarpenterMenuCustomizer(IModHelper helper)
+        public CarpenterMenuCustomizer()
         {
-            this.helper = helper;
             helper.Events.Display.MenuChanged += OnMenuChanged;
         }
 

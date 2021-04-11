@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using FinalDoom.StardewValley.InterdimensionalShed.Dimensions;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Netcode;
@@ -13,7 +14,6 @@ using StardewValley;
 using StardewValley.Buildings;
 using StardewValley.Menus;
 using StardewValley.TerrainFeatures;
-using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
@@ -27,11 +27,11 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         {
             Utility.Mod = this;
 
-            myMenuTexture = Helper.Content.Load<Texture2D >("assets/MenuTiles.png", ContentSource.ModFolder);
+            myMenuTexture = Helper.Content.Load<Texture2D>("assets/MenuTiles.png", ContentSource.ModFolder);
             myMenuTextureUncolored = Helper.Content.Load<Texture2D>("assets/MenuTilesUncolored.png", ContentSource.ModFolder);
 
-            new SaveManager();
-            new CarpenterMenuCustomizer(helper);
+            var _ = Singleton<SaveManager>.Instance;
+            var __ = Singleton<CarpenterMenuCustomizer>.Instance;
             config = Helper.ReadConfig<ModConfig>();
             Helper.Events.Input.ButtonPressed += Input_ButtonPressed_DebugHelp;
         }
@@ -43,6 +43,8 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         KeybindList home = KeybindList.Parse("LeftControl + LeftAlt + d");
         KeybindList localInfoFix = KeybindList.Parse("LeftControl + LeftAlt + i");
         KeybindList mayo = KeybindList.Parse("LeftControl + LeftAlt + m");
+        KeybindList dayupdate = KeybindList.Parse("LeftControl + LeftAlt + u");
+
         private void Input_ButtonPressed_DebugHelp(object sender, ButtonPressedEventArgs e)
         {
             if (cheats.JustPressed())
@@ -72,7 +74,19 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             else if (mayo.JustPressed())
             {
                 Helper.ConsoleCommands.Trigger("player_add", new string[]{
-                    "name", "mayonnaise", "69", "4"});
+                    //"name", "mayonnaise", "69", "4"});
+                    "name", "crystal fruit", "150" });
+            }
+            else if (dayupdate.JustPressed())
+            {
+                
+                var winterindoors = Game1.getFarm().buildings.OfType<DimensionBuilding>().Where(db => db.modData[DimensionBuilding.ModData_ShedDimensionKey] == "WinterDimension").Single().indoors.Value;
+                winterindoors.spawnObjects();
+                //winterindoors.DayUpdate(((Game1.dayOfMonth + tries - 1) % 28 + 1));
+                //tries++;
+                
+                //Game1.getLocationFromName("Backwoods").spawnObjects();
+                //tries++;
             }
         }
 
@@ -117,7 +131,13 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             "DimensionShed3",
             "DimensionShed4",
             "DimensionShed5",
-            "DimensionShed6"
+            "DimensionShed6",
+            "WinterDimension1",
+            "WinterDimension2",
+            "WinterDimension3",
+            "WinterDimension4",
+            "WinterDimension5",
+            "WinterDimension6"
         };
 
         public bool CanLoad<T>(IAssetInfo asset)
@@ -154,7 +174,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         public bool CanEdit<T>(IAssetInfo asset)
         {
             return asset.AssetNameEquals("Data/Blueprints") || asset.AssetNameEquals("Data/Events/Farm")
-                || asset.AssetNameEquals("Characters/Dialogue/Abigail");
+                || asset.AssetNameEquals("Characters/Dialogue/Abigail") || asset.AssetNameEquals("Data/Locations");
         }
 
         public void Edit<T>(IAssetData asset)
@@ -173,6 +193,11 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             else if (asset.AssetNameEquals("Characters/Dialogue/Abigail"))
             {
                 editAssetData(asset, AbigailDialogueCharacters);
+            }
+            else if (asset.AssetNameEquals("Data/Locations"))
+            {
+                // ///Winter forageables: crystal fruit, crocus, holly///Winter fish depending on location/artifacts
+                editAssetData(asset, new Dictionary<string, string>() { { "WinterDimension", $"-1/-1/-1/418 .9 414 .7 283 .5/{WinterDimension.LocationFishData(asset.AsDictionary<string, string>().Data)}/-1" } });
             }
         }
 

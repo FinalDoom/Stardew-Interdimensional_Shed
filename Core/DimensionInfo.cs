@@ -7,8 +7,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using StardewValley.Buildings;
+using FinalDoom.StardewValley.InterdimensionalShed.API;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed.API
+namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     /// <summary>
     /// Description of the various immutable parts of a dimension, loaded from JSON.
@@ -56,6 +57,17 @@ namespace FinalDoom.StardewValley.InterdimensionalShed.API
         /// </summary>
         public string Description3 { get => description3; }
         private string description3;
+        /// <summary>
+        /// Color to use for ambient lighting.
+        /// </summary>
+        public Color LightingColor
+        {
+            get
+            {
+                var prop = typeof(Color).GetProperty(textShadowColor);
+                return (Color?)prop?.GetValue(null, null) ?? Color.White;
+            }
+        }
         /// <summary>
         /// Color to use for the text shadow. This is used for the shadow of the hint/description in the GUI.
         /// </summary>

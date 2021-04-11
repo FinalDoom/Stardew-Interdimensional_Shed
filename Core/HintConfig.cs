@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FinalDoom.StardewValley.InterdimensionalShed.API
+namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     /// <summary>
     /// Enum that can be used in configuration to allow users to customize the level of hints they want.

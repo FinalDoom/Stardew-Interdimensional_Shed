@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {

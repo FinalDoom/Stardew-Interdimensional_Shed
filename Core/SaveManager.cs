@@ -7,35 +7,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FinalDoom.StardewValley.InterdimensionalShed.API;
-using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
 {
     /// <summary>
     /// Self contained manager that calls <see cref="ISaveHandler"/>s pre and post save/load and <see cref="ILaunchHandler"/>s on game launch.
     /// </summary>
-    internal class SaveManager
+    public class SaveManager
     {
         private readonly List<ILaunchHandler> launchHandlers;
         private readonly List<ISaveHandler> saveableObjectsHandlers;
 
-        internal SaveManager()
+        public SaveManager()
         {
             launchHandlers = (
                from type in Utility.GetAllTypes()
                where !type.IsInterface && !type.IsAbstract && type.GetInterfaces().Any(i => i.IsAssignableFrom(typeof(ILaunchHandler)))
                let priority = type.GetCustomAttributes(typeof(PriorityAttribute), false).Select(attr => ((PriorityAttribute)attr).Priority).SingleOrDefault()
                orderby priority descending
-               select (ILaunchHandler)Activator.CreateInstance(type)
+               select (ILaunchHandler)typeof(Singleton<>).MakeGenericType(type).GetProperty("Instance").GetValue(null, null)
                ).ToList();
             saveableObjectsHandlers = (
                 from type in Utility.GetAllTypes()
                 where !type.IsInterface && !type.IsAbstract && type.GetInterfaces().Any(i => i.IsAssignableFrom(typeof(ISaveHandler)))
                 let priority = type.GetCustomAttributes(typeof(PriorityAttribute), false).Select(attr => ((PriorityAttribute)attr).Priority).SingleOrDefault()
-                let launcher = launchHandlers.Where(h => h.GetType() == type).SingleOrDefault()
                 orderby priority descending
-                select launcher == null ? (ISaveHandler)Activator.CreateInstance(type) : (ISaveHandler)launcher
+                select (ISaveHandler)typeof(Singleton<>).MakeGenericType(type).GetProperty("Instance").GetValue(null, null)
                 ).ToList();
 
             Utility.Helper.Events.GameLoop.GameLaunched += GameLoop_GameLaunched_InitializeObjects;

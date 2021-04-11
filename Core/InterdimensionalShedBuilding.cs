@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using FinalDoom.StardewValley.InterdimensionalShed.API;
-using Utility = FinalDoom.StardewValley.InterdimensionalShed.API.Utility;
 using StardewModdingAPI.Events;
 
 namespace FinalDoom.StardewValley.InterdimensionalShed
@@ -22,6 +20,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
         private const string ModData_SelectedDimensionItemKey = "SelectedDimensionItemId";
         private static readonly Point ItemSlotTileOffset = new Point(1, 0);
 
+        private DimensionData data = Singleton<DimensionData>.Instance;
         private DimensionInfo selectedDimension = null;
         internal DimensionInfo SelectedDimension
         {
@@ -29,7 +28,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             set 
             {
                 selectedDimension = value;
-                modData[ModData_SelectedDimensionItemKey] = value == null ? "none" : value.DimensionImplementation.Item.ParentSheetIndex.ToString();
+                modData[ModData_SelectedDimensionItemKey] = value?.DimensionImplementation.Item.ParentSheetIndex.ToString() ?? "none";
             }
         }
 
@@ -41,7 +40,7 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             modData = building.modData;
             modData[ModEntry.SaveKey] = "true";
             var item = modData.ContainsKey(ModData_SelectedDimensionItemKey) ? modData[ModData_SelectedDimensionItemKey] : "769";
-            var dimension = item.Equals("none") ? null : DimensionData.Data.getDimensionInfo(Convert.ToInt32(item));
+            var dimension = item.Equals("none") ? null : data.getDimensionInfo(Convert.ToInt32(item));
             if (dimension != null && !modData.ContainsKey(ModData_SelectedDimensionItemKey))
             {
                 Utility.Log("New " + typeof(InterdimensionalShedBuilding).Name + " dimension set to " + dimension.DisplayName + " dimension");
@@ -68,13 +67,13 @@ namespace FinalDoom.StardewValley.InterdimensionalShed
             }
             else if (selectedDimension != null && who.IsLocalPlayer && tileLocation.X == (float)(humanDoor.X + tileX.Value) && tileLocation.Y == (float)(humanDoor.Y + tileY.Value))
             {
-                if (selectedDimension.DimensionImplementation.Item.Stack == 0)
+                if (selectedDimension.DimensionImplementation.CurrentStage() <= 0)
                 {
                     return false;
                 }
                 var warpTargetX = tileX.Value + humanDoor.X;
                 var warpTargetY = tileY.Value + humanDoor.Y + 1;
-                DimensionData.Data.doDimensionWarp(selectedDimension, who, new Point(warpTargetX, warpTargetY));
+                data.doDimensionWarp(selectedDimension, who, new Point(warpTargetX, warpTargetY));
                 // Consider Myst sound here
                 who.currentLocation.playSoundAt("doorClose", tileLocation);
                 return true;
